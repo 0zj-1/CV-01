@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>林子敬 — 個人網站</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <h1>林子敬</h1>
+        <p class="subtitle">MScATB 碩士</p>
+      </div>
+      <nav class="nav">
+        <a href="#about">關於我</a>
+        <a href="#education">學歷</a>
+        <a href="#skills">技能</a>
+        <a href="#projects">作品</a>
+        <a href="#contact">聯絡</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h2>嗨，我是林子敬</h2>
+          <p>擁有 MScATB 碩士學位，熱衷於技術與創新，專注於跨領域應用與實務問題解決。</p>
+          <div class="actions">
+            <a class="btn" href="#projects">查看作品</a>
+            <a class="btn outline" href="#contact">聯絡我</a>
+          </div>
+        </div>
+        <div class="hero-photo" aria-hidden="true">
+          <div class="avatar">LZ</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="container">
+        <h3>關於我</h3>
+        <p>我具備理論與實務並重的背景，擅長將學術成果應用於實際專案。興趣包含資料分析、系統整合與產品設計。歡迎透過下方聯絡方式或 LinkedIn 與我交流合作。</p>
+      </div>
+    </section>
+
+    <section id="education" class="section alt">
+      <div class="container">
+        <h3>學歷</h3>
+        <ul class="timeline">
+          <li>
+            <strong>MScATB 碩士</strong>
+            <span class="meta">主修相關領域 · 畢業年 (請替換)</span>
+            <p>研究/專題方向：可填入你的研究主題、專案或論文重點。</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="skills" class="section">
+      <div class="container">
+        <h3>技能</h3>
+        <div class="skills-grid">
+          <div class="skill">Python / R</div>
+          <div class="skill">資料分析 / 機器學習</div>
+          <div class="skill">網頁前端 (HTML/CSS/JS)</div>
+          <div class="skill">系統整合 / API</div>
+          <div class="skill">專案管理</div>
+          <div class="skill">論文撰寫與研究方法</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="section alt">
+      <div class="container">
+        <h3>作品與專案</h3>
+        <div class="projects-grid">
+          <article class="project">
+            <h4>專案名稱 A</h4>
+            <p>簡短說明：描述專案目標、你在其中的角色與採用的技術。</p>
+            <p class="project-meta">技術：示例技術 · 狀態：完成</p>
+          </article>
+
+          <article class="project">
+            <h4>專案名稱 B</h4>
+            <p>簡短說明：可放 GitHub 連結或專案演示影片連結。</p>
+            <p class="project-meta">技術：示例技術 · 狀態：開發中</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <div class="container">
+        <h3>聯絡我</h3>
+        <p>電子郵件：<a href="mailto:your.email@example.com">your.email@example.com</a></p>
+        <p>或於 LinkedIn / GitHub 上搜尋並連絡我。</p>
+        <form class="contact-form" onsubmit="alert('請替換為實際處理聯絡表單的後端或第三方表單服務。'); return false;">
+          <label>
+            名稱
+            <input type="text" name="name" placeholder="你的姓名" required>
+          </label>
+          <label>
+            電子郵件
+            <input type="email" name="email" placeholder="you@example.com" required>
+          </label>
+          <label>
+            訊息
+            <textarea name="message" rows="4" placeholder="輸入訊息..." required></textarea>
+          </label>
+          <button type="submit" class="btn">送出</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> 林子敬 · MScATB 碩士</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
