@@ -6,9 +6,13 @@ import Link from 'next/link';
 import { worksCopy } from '../content/works';
 import type { Project } from '../content/projects/types';
 
+const cropTransform = (crop: { x: number; y: number; scale: number }) => `translate(${(50 - crop.x) * (crop.scale - 1)}%, ${(50 - crop.y) * (crop.scale - 1)}%) scale(${crop.scale})`;
+
 function Preview({ work, active }: { work: Project; active: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [frame, setFrame] = useState(-1);
+  const previewMedia = work.videos[0];
+  const previewVideo = !!previewMedia;
   useEffect(() => {
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let timer: ReturnType<typeof setInterval> | undefined;
@@ -23,7 +27,7 @@ function Preview({ work, active }: { work: Project; active: boolean }) {
         setFrame(-1);
         return;
       }
-      if (video) {
+      if (video && previewVideo) {
         video.play().then(() => { if (request === generation) setFrame(0); }).catch(() => { if (request === generation) setFrame(-1); });
       } else {
         setFrame(0);
@@ -35,9 +39,15 @@ function Preview({ work, active }: { work: Project; active: boolean }) {
     document.addEventListener('visibilitychange', sync);
     return () => { generation++; clearInterval(timer); video?.pause(); motion.removeEventListener('change', sync); document.removeEventListener('visibilitychange', sync); };
   }, [active, work]);
-  return <div className="more-work-image">
-    <img src={frame >= 0 && !work.videos.length ? (work.images[frame] || work.cover) : (work.cover || work.images[0] || "/images/project-placeholder.svg")} alt={work.coverAlt} />
-    {work.videos[0] && <video ref={videoRef} src={work.videos[0]} muted loop playsInline preload="none" aria-hidden="true" style={{ opacity: active && frame >= 0 ? 1 : 0 }} />}
+  const cropStyle = {
+    '--cover-normal-x': `${work.coverCrop?.normal.x ?? 50}%`, '--cover-normal-y': `${work.coverCrop?.normal.y ?? 50}%`,
+    '--cover-hover-x': `${work.coverCrop?.hover.x ?? 50}%`, '--cover-hover-y': `${work.coverCrop?.hover.y ?? 50}%`,
+    '--cover-normal-transform': cropTransform(work.coverCrop?.normal ?? { x: 50, y: 50, scale: 1 }),
+    '--cover-hover-transform': cropTransform(work.coverCrop?.hover ?? { x: 50, y: 50, scale: 1.08 }),
+  } as React.CSSProperties;
+  return <div className="more-work-image" style={cropStyle}>
+    <img src={frame >= 0 && !previewVideo ? (work.images[frame] || work.cover) : (work.cover || work.images[0] || "/images/project-placeholder.svg")} alt={work.coverAlt} />
+    {previewVideo && <video ref={videoRef} src={previewMedia} muted loop playsInline preload="none" aria-hidden="true" style={{ opacity: active && frame >= 0 ? 1 : 0 }} />}
   </div>;
 }
 

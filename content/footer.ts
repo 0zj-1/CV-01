@@ -42,7 +42,7 @@ export const footer = {
     }
   },
   "bottomLeft": "Hong Kong — Designer & Creative",
-  "copyright": "© 2026 LIN ZIJING",
+  "copyright": "© 2026 RAORAO BOJI",
   "bottomRight": "Brand, visual, 3D & emerging technology.",
   "wordmark": "FORM",
   "glassImage": "/images/ending-glass.png"

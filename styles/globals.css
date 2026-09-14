@@ -99,14 +99,14 @@ html, body { margin: 0; }
 /* Zoom inside the cover; neither captions nor horizontal track dimensions move. */
 .work-cover { overflow: hidden; }
 .work-cover > .work-image,
-.work-cover > .more-work-image { transition: transform 450ms cubic-bezier(.2,.65,.3,1); transform: scale(1); }
+.work-cover > .more-work-image { transition: transform 450ms cubic-bezier(.2,.65,.3,1); transform: scale(var(--cover-normal-scale, 1)); }
 @media (hover: hover) and (pointer: fine) {
   .work-cover:hover > .work-image,
-  .work-cover:hover > .more-work-image { transform: scale(1.08); }
+  .work-cover:hover > .more-work-image { transform: scale(var(--cover-main-hover-scale, 1.08)); }
 }
 /* Also supports keyboard focus once the covers become project links. */
 .work-cover:focus-within > .work-image,
-.work-cover:focus-within > .more-work-image { transform: scale(1.08); }
+.work-cover:focus-within > .more-work-image { transform: scale(var(--cover-main-hover-scale, 1.08)); }
 @media (prefers-reduced-motion: reduce) {
   .work-cover > .work-image,
   .work-cover > .more-work-image { transition: none; transform: none !important; }
@@ -114,6 +114,13 @@ html, body { margin: 0; }
 
 /* Uploaded main-project covers share the existing cover size and hover zoom. */
 .work-image--cover { display: block; width: 100%; object-fit: cover; }
+.work-image--cover { object-position: var(--cover-normal-x, 50%) var(--cover-normal-y, 50%); }
+@media (hover: hover) and (pointer: fine) {
+  .work-cover:hover > .work-image--cover { object-position: var(--cover-hover-x, 50%) var(--cover-hover-y, 50%); }
+}
+.more-work-image img { object-position: var(--cover-normal-x, 50%) var(--cover-normal-y, 50%); }
+.more-work-image img { transform: var(--cover-normal-transform, scale(var(--cover-normal-scale, 1))); transition: transform 450ms cubic-bezier(.2,.65,.3,1); }
+.more-work[data-active="true"] .more-work-image img { object-position: var(--cover-hover-x, 50%) var(--cover-hover-y, 50%); transform: var(--cover-hover-transform, scale(var(--cover-hover-scale, 1))); }
 
 /* Native project links retain the existing card appearance and zoom. */
 a.work-cover { display: block; color: inherit; text-decoration: none; }

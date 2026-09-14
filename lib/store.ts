@@ -2,9 +2,10 @@ import Database from 'better-sqlite3';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { randomBytes, scryptSync, timingSafeEqual, createHash } from 'node:crypto';
-import type { Project } from '../content/projects/types';
+import type { CoverCrop, Project } from '../content/projects/types';
 
 export type ManagedProject = Project & { published: boolean; placement: 'selected' | 'more'; order: number };
+const defaultCoverCrop: CoverCrop = { normal: { x: 50, y: 50, scale: 1 }, hover: { x: 50, y: 50, scale: 1.08 } };
 export const dataDirectory = () => path.resolve(/* turbopackIgnore: true */ process.env.CV_DATA_DIR || path.join(process.cwd(), 'data'));
 export function openStore(directory = dataDirectory()) {
   mkdirSync(directory, { recursive: true });
@@ -28,7 +29,10 @@ export function seedProjects(db: Store, projects: Project[]) {
 }
 export function listProjects(db: Store, publicOnly = false): ManagedProject[] {
   return (db.prepare('SELECT id,body FROM projects').all() as {id:number;body:string}[])
-    .map(row => ({ ...JSON.parse(row.body), id: row.id } as ManagedProject))
+    .map(row => {
+      const project = JSON.parse(row.body) as ManagedProject;
+      return { ...project, id: row.id, morePreviewMedia: '' };
+    })
     .filter(p => !publicOnly || p.published).sort((a,b) => a.order - b.order || a.id - b.id);
 }
 const text = (v: unknown, max: number, required = false) => {
@@ -49,9 +53,16 @@ export function validateProject(v: unknown): ManagedProject {
   if (typeof p.published !== 'boolean' || !Number.isInteger(p.order) || Number(p.order) < 0 || Number(p.order) > 10000) throw new Error('發布狀態或排序不正確');
   if (!p.detail || typeof p.detail !== 'object') throw new Error('缺少詳情');
   const d = p.detail as Record<string, unknown>;
+  const crop = (p.coverCrop && typeof p.coverCrop === 'object' ? p.coverCrop : {}) as Record<string, unknown>;
+  const cropState = (value: unknown, fallback: CoverCrop['normal']) => {
+    const state = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>;
+    const number = (input: unknown, defaultValue: number, min: number, max: number) => typeof input === 'number' && Number.isFinite(input) && input >= min && input <= max ? input : defaultValue;
+    return { x: number(state.x, fallback.x, 0, 100), y: number(state.y, fallback.y, 0, 100), scale: number(state.scale, fallback.scale, 1, 2) };
+  };
+  const coverCrop: CoverCrop = { normal: cropState(crop.normal, defaultCoverCrop.normal), hover: cropState(crop.hover, defaultCoverCrop.hover) };
   const array = (v: unknown) => { if (!Array.isArray(v) || v.length > 50) throw new Error('最多 50 個素材'); return v.map(media).filter(Boolean); };
   return { id: Number.isInteger(p.id) && Number(p.id) > 0 ? Number(p.id) : 0, slug,
-    title: text(p.title, 160, true), description: text(p.description, 1000), cover: media(p.cover), coverAlt: text(p.coverAlt, 300), featuredMedia: media(p.featuredMedia ?? ''),
+    title: text(p.title, 160, true), description: text(p.description, 1000), cover: media(p.cover), coverAlt: text(p.coverAlt, 300), coverCrop, featuredMedia: media(p.featuredMedia ?? ''), morePreviewMedia: media(p.morePreviewMedia ?? ''),
     images: array(p.images), videos: array(p.videos), placeholderNumber: text(p.placeholderNumber, 20), placeholderLabel: text(p.placeholderLabel, 100),
     detail: { category: text(d.category, 100), year: text(d.year, 20), headline: text(d.headline, 300), introduction: text(d.introduction, 10000), approach: text(d.approach, 10000) },
     placement: p.placement, published: p.published, order: Number(p.order) };
