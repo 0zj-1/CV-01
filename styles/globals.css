@@ -1,0 +1,113 @@
+:root { color-scheme: light; font-family: Arial, Helvetica, sans-serif; background: #ededeb; color: #252525; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+/* Edit this height to change the total opening scroll length. */
+.scroll-section { height: 450vh; }
+.scene { position: sticky; top: 0; width: 100%; height: 100vh; overflow: hidden; isolation: isolate; }
+.portfolio-page { position: relative; isolation: isolate; }
+.background-video { position: fixed; z-index: -1; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; }
+.text-sequences { position: absolute; inset: 0; }
+.sequence { position: absolute; left: 8vw; top: 54vh; max-width: 84vw; margin: 0; opacity: 0; font-size: clamp(32px, 4.6vw, 76px); line-height: 1.16; letter-spacing: -0.045em; font-weight: 400; will-change: transform, opacity; }
+.sequence strong { font-weight: 600; }
+.sequence--second { top: 49vh; }
+.sequence--words { top: 56vh; display: flex; flex-wrap: wrap; gap: 0.5em; font-size: clamp(24px, 2.8vw, 46px); letter-spacing: -0.025em; }
+.process-word { opacity: 0.2; }
+.final-anchor { position: fixed; left: 8vw; top: 50vh; width: 84vw; pointer-events: none; will-change: transform; }
+.sequence--final { position: static; }
+.sequence--final h2 { margin: 0; font: inherit; }
+.video-status { position: absolute; top: 24px; left: 8vw; font-size: 13px; }
+/* Transparent section lets the stationary last video frame remain visible around works. */
+.works-section { position: relative; z-index: 1; width: 76vw; max-width: 1200px; margin: 0 auto; padding: 0 0 18vh; }
+.work-placeholder { margin-bottom: 14vh; }
+.work-image { min-height: 48vh; aspect-ratio: 16 / 9; background: #d8d9d6; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+.work-image--2 { background: #d0d5d4; }
+.work-image span { font-size: clamp(72px, 12vw, 160px); font-weight: 400; letter-spacing: -0.07em; color: #868c87; }
+.work-image p { font-size: 11px; letter-spacing: 0.16em; }
+.work-caption { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; padding: 24px 0; }
+.work-caption h3 { margin: 0; font-size: 24px; font-weight: 400; }
+.work-caption p { margin: 0; font-size: 13px; }
+@media (prefers-reduced-motion: reduce) {
+  .text-sequences { display: flex; flex-direction: column; justify-content: center; gap: 28px; padding: 8vw; }
+  .sequence { position: static; font-size: clamp(22px, 3vw, 42px); transform: none !important; filter: none !important; opacity: 1 !important; will-change: auto; }
+  .final-anchor { position: static; width: auto; padding: 0 8vw 10vh; will-change: auto; }
+  .process-word { opacity: 1 !important; }
+}
+
+/* One continuous strip, with no pagination or forced scroll snapping. */
+.more-works { position: relative; z-index: 1; width: 94vw; min-height: 100vh; margin: 0 auto; padding: 8vh 0 16vh; }
+.more-works-panel { background: transparent; padding: 28px; }
+.more-works-header { display: flex; justify-content: space-between; align-items: baseline; gap: 40px; padding: 3vh 0 7vh; }
+.more-works-header h2 { margin: 0; font-size: clamp(42px, 6vw, 92px); font-weight: 400; letter-spacing: -.055em; }
+.more-works-header p { margin: 0; width: 30%; font-size: clamp(16px, 2vw, 28px); line-height: 1.15; letter-spacing: -.035em; }
+.more-works-track { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: none; overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: #999 transparent; padding-bottom: 18px; }
+.more-work { flex: 0 0 calc((100% - 24px) / 3); min-width: 0; transition: flex-basis 550ms cubic-bezier(.2,.65,.3,1); }
+.more-work-image { position: relative; overflow: hidden; height: clamp(280px, 34vw, 520px); }
+.more-work-image img, .more-work-image video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.more-work-image video { position: absolute; inset: 0; }
+.more-work h3 { margin: 12px 0 5px; font-size: clamp(18px, 2vw, 28px); letter-spacing: -.035em; font-weight: 400; }
+.more-work p { margin: 0; font-size: 11px; line-height: 1.5; color: #656565; }
+.more-works-controls { display: flex; justify-content: flex-end; gap: 12px; padding-top: 12px; }
+.more-works-controls button { width: 44px; height: 44px; border: 0; background: transparent; color: #252525; font-size: 26px; cursor: pointer; }
+.more-works-controls button:disabled { opacity: .25; cursor: default; }
+.more-works-track:focus-visible, .more-work:focus-visible, .more-works-controls button:focus-visible { outline: 2px solid #252525; outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .more-work { transition: none; } }
+
+/* Reference ending: pinned composition, entering over the blurred frozen video. */
+.ending-section { position: relative; z-index: 2; height: 170vh; }
+.ending-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; background: transparent; }
+.ending-content { position: relative; z-index: 2; width: 80vw; margin-left: 16vw; padding-top: 12vh; }
+.ending-invitation { margin: 0; font-size: clamp(28px, 3.9vw, 62px); line-height: 1.08; letter-spacing: -0.05em; font-weight: 400; transform: translateY(calc((1 - var(--ending-progress, 0)) * 60px)); }
+/* An invisible in-flow word supplies the same text baseline as the surrounding
+   sentence. Absolute animated words share its line box; clipping doesn't move it. */
+.ending-word { display: inline-block; position: relative; width: 4.35em; vertical-align: baseline; clip-path: inset(-.08em 0 -.08em 0); }
+.ending-word-measure { visibility: hidden; }
+.ending-word-item { position: absolute; inset: 0; white-space: nowrap; }
+.ending-letter { display: inline-block; opacity: 0; transform: translateY(110%); animation: ending-letter-jump 8s linear infinite both; animation-play-state: paused; }
+.ending-section[data-animate="true"] .ending-letter,
+.ending-section[data-animate="true"] .ending-glass-color { animation-play-state: running; }
+/* Each letter trails the last by 45ms. Entrance / exit last 280ms, with a hold
+   between; the same stagger repeats at the eight-second loop boundary. */
+@keyframes ending-letter-jump {
+  0% { opacity: 0; transform: translateY(110%); animation-timing-function: cubic-bezier(.2,.8,.3,1); }
+  3.5%, 21.5% { opacity: 1; transform: translateY(0); }
+  25%, 100% { opacity: 0; transform: translateY(-110%); }
+}
+.ending-columns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2vw; margin-top: 10vh; font-size: clamp(11px, 1.15vw, 17px); line-height: 1.25; }
+.ending-columns > div { border-top: 1px solid #8c978c; }
+.ending-columns span { display: block; }
+.ending-label { margin: -18px 0 14px; font-size: 9px; letter-spacing: -0.01em; }
+.ending-fineprint { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 2vw; margin-top: 5vh; padding-top: 14px; border-top: 1px solid #8c978c; font-size: 9px; line-height: 1.4; }
+.ending-wordmark { position: absolute; left: 15vw; top: 77vh; color: #101510; font-family: Arial, Helvetica, sans-serif; font-size: 28vw; font-weight: 900; line-height: 0.82; letter-spacing: -0.075em; transform: translateY(calc((1 - var(--ending-progress, 0)) * 120px)); }
+/* Transparent raster glass with continuous SVG displacement, not a solid backdrop. */
+.ending-glass { position: absolute; z-index: 1; left: -9vw; top: 20vh; width: 28vw; pointer-events: auto; transform: translateY(calc((1 - var(--ending-progress, 0)) * 60px)); }
+.ending-glass-color { animation: glass-color 12s linear infinite; animation-play-state: paused; }
+.ending-glass-shape { display: block; width: 100%; overflow: visible; transform-origin: center; }
+/* Hold red, fluorescent green, and dark blue briefly between transitions. */
+@keyframes glass-color {
+  0%, 12%, 100% { filter: hue-rotate(0deg) saturate(1.2) brightness(1); }
+  33%, 45% { filter: hue-rotate(105deg) saturate(1.6) brightness(1.5); }
+  66%, 78% { filter: hue-rotate(235deg) saturate(1.4) brightness(.7); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ending-invitation, .ending-wordmark, .ending-glass { transform: none; }
+  .ending-letter, .ending-glass-color { animation: none; }
+  .ending-word-item { display: none; }
+  .ending-word-item:nth-child(2) { display: block; }
+  .ending-letter { opacity: 1; transform: none; }
+}
+
+/* Zoom inside the cover; neither captions nor horizontal track dimensions move. */
+.work-cover { overflow: hidden; }
+.work-cover > .work-image,
+.work-cover > .more-work-image { transition: transform 450ms cubic-bezier(.2,.65,.3,1); transform: scale(1); }
+@media (hover: hover) and (pointer: fine) {
+  .work-cover:hover > .work-image,
+  .work-cover:hover > .more-work-image { transform: scale(1.08); }
+}
+/* Also supports keyboard focus once the covers become project links. */
+.work-cover:focus-within > .work-image,
+.work-cover:focus-within > .more-work-image { transform: scale(1.08); }
+@media (prefers-reduced-motion: reduce) {
+  .work-cover > .work-image,
+  .work-cover > .more-work-image { transition: none; transform: none !important; }
+}
