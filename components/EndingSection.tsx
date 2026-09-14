@@ -3,7 +3,9 @@
 import { useEffect, useId, useRef } from "react";
 import gsap from "gsap";
 
-const WORDS = ["branding", "modeling", "visual", "gamming"];
+import { footer } from "../content/footer";
+
+const WORDS = footer.rotatingWords;
 
 // Visual demo of the supplied reference footer. Reference labels are not live links.
 export default function EndingSection() {
@@ -92,19 +94,19 @@ export default function EndingSection() {
   return <section ref={sectionRef} className="ending-section" aria-label="Footer">
     <div className="ending-stage">
       <div className="ending-content">
-        <h2 className="ending-invitation">Let’s build your next <span className="ending-word" aria-label="branding, modeling, visual, gamming">
-          <span className="ending-word-measure" aria-hidden="true">branding</span>
+        <h2 className="ending-invitation">{footer.headlineBefore}<span className="ending-word" aria-label={WORDS.join(", ")}>
+          <span className="ending-word-measure" aria-hidden="true">{WORDS[0]}</span>
           {WORDS.map((word, index) => <span key={word} className="ending-word-item" aria-hidden="true">
             {Array.from(word).map((letter, letterIndex) => <span key={letterIndex} className="ending-letter" style={{ animationDelay: `${index * 2 + letterIndex * 0.045}s` }}>{letter}</span>)}
           </span>)}
-        </span><br />project together.</h2>
+        </span><br />{footer.headlineAfter}</h2>
         <div className="ending-columns">
-          <div><p className="ending-label">Work</p><span>Selected Works</span><span>Branding</span><span>3D &amp; CGI</span><span>AI Experiments</span></div>
-          <div><p className="ending-label">About</p><span>Profile</span><span>Experience</span><span>CV</span></div>
-          <div><p className="ending-label">Connect</p><span>Behance</span><span>LinkedIn</span><span>Instagram</span></div>
-          <div><p className="ending-label">Contact</p><span>0zjcszwsmqs@gmail.com</span></div>
+          {Object.entries(footer.columns).map(([key, column]) => <div key={key}>
+            <p className="ending-label">{column.title}</p>
+            {column.items.map((item, index) => <span key={index}>{item}</span>)}
+          </div>)}
         </div>
-        <div className="ending-fineprint"><span>Hong Kong — Designer &amp; Creative</span><span>© 2026 LIN ZIJING</span><span>Brand, visual, 3D &amp; emerging technology.</span></div>
+        <div className="ending-fineprint"><span>{footer.bottomLeft}</span><span>{footer.copyright}</span><span>{footer.bottomRight}</span></div>
       </div>
       <div ref={glassRef} className="ending-glass" aria-hidden="true">
         <div className="ending-glass-color">
@@ -116,11 +118,11 @@ export default function EndingSection() {
                 <feDisplacementMap in="SourceGraphic" in2="flow" scale="165" xChannelSelector="R" yChannelSelector="G" />
               </filter>
             </defs>
-            <image href="/images/ending-glass.png" width="1024" height="1024" filter={`url(#${filterId})`} />
+            <image href={footer.glassImage} width="1024" height="1024" filter={`url(#${filterId})`} />
           </svg>
         </div>
       </div>
-      <div className="ending-wordmark" aria-label="FORM">FORM</div>
+      <div className="ending-wordmark" aria-label={footer.wordmark}>{footer.wordmark}</div>
     </div>
   </section>;
 }

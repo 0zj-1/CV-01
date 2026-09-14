@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import '../styles/globals.css';
+import { site } from '../content/site';
 
 export const metadata: Metadata = {
-  title: 'Lin Zijing — Scroll Study',
-  description: 'A minimal scroll-controlled video and typography prototype.',
+  title: site.title,
+  description: site.description,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

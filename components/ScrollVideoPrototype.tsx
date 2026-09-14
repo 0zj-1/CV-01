@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import MoreWorks from './MoreWorks';
 import EndingSection from './EndingSection';
+import SelectedWorks from './SelectedWorks';
+import { intro } from '../content/intro';
 
 // Normalized scroll positions: enter → fully visible → start exit → hidden.
 const TIMING = {
@@ -136,7 +138,7 @@ export default function ScrollVideoPrototype() {
       statusLabel.textContent = '';
       wake();
     };
-    const error = () => { statusLabel.textContent = 'Video could not load. Check /video/glass-sculpture.mp4.'; };
+    const error = () => { statusLabel.textContent = intro.videoError; };
     const motionChange = () => { buildTimeline(); wake(); };
     buildTimeline();
     measure();
@@ -163,32 +165,24 @@ export default function ScrollVideoPrototype() {
 
   return <div className="portfolio-page">
     {/* Fixed independently of the intro: its final frame stays behind the works. */}
-    <video ref={videoRef} className="background-video" src="/video/glass-sculpture.mp4" muted playsInline preload="auto" aria-hidden="true" />
+    <video ref={videoRef} className="background-video" src={intro.backgroundVideo} muted playsInline preload="auto" aria-hidden="true" />
     <section ref={sectionRef} className="scroll-section" aria-label="Portfolio introduction">
       {/* Only the text layer releases: the final headline travels upward with the page. */}
       <div className="scene">
         <div className="text-sequences">
-          <h1 className="sequence sequence--first">I design between<br /><strong>structure and imagination.</strong></h1>
-          <h2 className="sequence sequence--second">Different mediums.<br /><strong>One way of thinking.</strong></h2>
+          <h1 className="sequence sequence--first">{intro.first.line}<br /><strong>{intro.first.emphasis}</strong></h1>
+          <h2 className="sequence sequence--second">{intro.second.line}<br /><strong>{intro.second.emphasis}</strong></h2>
           <p className="sequence sequence--words">
-            {['Observe.', 'Question.', 'Build.', 'Refine.'].map(word => <span className="process-word" key={word}>{word}</span>)}
+            {intro.processWords.map(word => <span className="process-word" key={word}>{word}</span>)}
           </p>
         </div>
-        <p ref={statusRef} className="video-status" role="status">Loading video…</p>
+        <p ref={statusRef} className="video-status" role="status">{intro.loading}</p>
       </div>
     </section>
     <div ref={finalAnchorRef} className="final-anchor">
-      <div className="sequence sequence--final"><h2>Now, let the work speak.</h2></div>
+      <div className="sequence sequence--final"><h2>{intro.final}</h2></div>
     </div>
-    <section className="works-section" aria-label="Selected Works">
-      {[1, 2].map(number => <article className="work-placeholder" key={number}>
-        <div className="work-cover"><div className={`work-image work-image--${number}`} role="img" aria-label={`Project ${number} image placeholder`}>
-          <span>0{number}</span><p>PROJECT IMAGE PLACEHOLDER</p>
-        </div>
-        </div>
-        <div className="work-caption"><h3>Project 0{number}</h3><p>Placeholder project — artwork and details to follow.</p></div>
-      </article>)}
-    </section>
+    <SelectedWorks />
     <MoreWorks />
     <EndingSection />
   </div>;
