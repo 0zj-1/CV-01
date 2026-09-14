@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import type { ManagedProject } from '../../lib/store';
-const empty=():ManagedProject=>({id:0,slug:'',title:'',description:'',cover:'',coverAlt:'',images:[],videos:[],placeholderNumber:'',placeholderLabel:'PROJECT IMAGE PLACEHOLDER',detail:{category:'',year:String(new Date().getFullYear()),headline:'',introduction:'',approach:''},published:false,placement:'more',order:0});
+const empty=():ManagedProject=>({id:0,slug:'',title:'',description:'',cover:'',coverAlt:'',featuredMedia:'',images:[],videos:[],placeholderNumber:'',placeholderLabel:'PROJECT IMAGE PLACEHOLDER',detail:{category:'',year:String(new Date().getFullYear()),headline:'',introduction:'',approach:''},published:false,placement:'more',order:0});
 export default function Manager({initial}:{initial:ManagedProject[]}){
  const [projects,setProjects]=useState(initial);const [work,setWork]=useState<ManagedProject>(initial[0]||empty());
  const [busy,setBusy]=useState(false);const [message,setMessage]=useState('');const [dirty,setDirty]=useState(false);
@@ -28,6 +28,7 @@ export default function Manager({initial}:{initial:ManagedProject[]}){
  {work.cover&&<img className="admin-thumb" src={work.cover} alt="封面預覽"/>}{field('coverAlt','封面圖片描述')}
  {(['category','year','headline','introduction','approach'] as const).map((key,i)=><label key={key}>{['分類','年份','詳情頁標題','作品介紹','設計方法'][i]}<textarea value={work.detail[key]} onChange={e=>change({detail:{...work.detail,[key]:e.target.value}})}/></label>)}
  {(['images','videos'] as const).map(key=><label key={key}>{key==='images'?'圖片清單（每行一個路徑，順序就是展示順序）':'影片清單（第一個用作 More Works 預覽）'}<textarea value={work[key].join('\n')} onChange={e=>change({[key]:e.target.value.split('\n')})}/><input type="file" accept={key==='images'?'image/jpeg,image/png,image/gif,image/webp':'video/mp4'} onChange={e=>{void upload(e.target.files?.[0],key);e.target.value='';}}/></label>)}
+ <label>詳情頁首屏素材<select value={work.featuredMedia} onChange={e=>change({featuredMedia:e.target.value})}><option value="">自動：優先第一個影片</option>{work.cover&&<option value={work.cover}>封面</option>}{work.images.map((src,i)=><option key={`image-${src}-${i}`} value={src}>圖片 {i+1}</option>)}{work.videos.map((src,i)=><option key={`video-${src}-${i}`} value={src}>影片 {i+1}</option>)}</select></label>
  <p className="admin-help">圖片支援 JPG、PNG、GIF、WebP；影片支援 MP4。單檔最多 100 MB。刪除清單中的路徑只會移除展示，素材檔案會保留。</p>
  </div></fieldset>
  <div className="admin-actions"><button disabled={busy} type="submit">{busy?'處理中…':'儲存作品'}</button>{work.id>0&&<button disabled={busy} type="button" onClick={async()=>{if(!confirm(`確定刪除「${work.title}」？作品資料會刪除，素材檔案保留。`))return;setBusy(true);try{const result=await api('/api/admin/projects',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:work.id})});setProjects(result.projects);setWork(result.projects[0]||empty());setDirty(false);setMessage('已刪除作品');}catch(e){setMessage(String(e));}finally{setBusy(false);}}}>刪除作品</button>}{work.published&&work.id>0&&<a href={`/works/${work.slug}`} target="_blank" rel="noreferrer">查看作品 ↗</a>}</div>

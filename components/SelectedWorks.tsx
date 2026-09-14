@@ -6,7 +6,7 @@ export default function SelectedWorks({ works }: { works: Project[] }) {
   return <section id="selected-works" className="works-section" aria-label="Selected Works">
     {works.map(work => <article className="work-placeholder" key={work.id}>
       <Link className="work-cover" href={`/works/${work.slug}`} aria-label={`View ${work.title}`}>
-        {work.cover ? <img className="work-image work-image--cover" src={work.cover} alt={work.coverAlt} /> :
+        {work.featuredMedia || work.videos[0] || work.cover ? (work.videos.includes(work.featuredMedia || work.videos[0] || '') ? <video className="work-image work-image--cover" src={work.featuredMedia || work.videos[0]} muted loop autoPlay playsInline preload="metadata" aria-label={work.coverAlt} /> : <img className="work-image work-image--cover" src={work.featuredMedia || work.cover} alt={work.coverAlt} />) :
           <div className={`work-image work-image--${work.id}`} role="img" aria-label={work.coverAlt}>
             <span>{work.placeholderNumber}</span><p>{work.placeholderLabel}</p>
           </div>}

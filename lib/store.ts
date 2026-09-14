@@ -51,7 +51,7 @@ export function validateProject(v: unknown): ManagedProject {
   const d = p.detail as Record<string, unknown>;
   const array = (v: unknown) => { if (!Array.isArray(v) || v.length > 50) throw new Error('最多 50 個素材'); return v.map(media).filter(Boolean); };
   return { id: Number.isInteger(p.id) && Number(p.id) > 0 ? Number(p.id) : 0, slug,
-    title: text(p.title, 160, true), description: text(p.description, 1000), cover: media(p.cover), coverAlt: text(p.coverAlt, 300),
+    title: text(p.title, 160, true), description: text(p.description, 1000), cover: media(p.cover), coverAlt: text(p.coverAlt, 300), featuredMedia: media(p.featuredMedia ?? ''),
     images: array(p.images), videos: array(p.videos), placeholderNumber: text(p.placeholderNumber, 20), placeholderLabel: text(p.placeholderLabel, 100),
     detail: { category: text(d.category, 100), year: text(d.year, 20), headline: text(d.headline, 300), introduction: text(d.introduction, 10000), approach: text(d.approach, 10000) },
     placement: p.placement, published: p.published, order: Number(p.order) };

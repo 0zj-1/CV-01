@@ -13,6 +13,7 @@ export type Project = {
   description: string;
   cover: string; // 主要作品留空時顯示原來的佔位畫面
   coverAlt: string;
+  featuredMedia?: string; // 詳情頁首屏素材；留空時優先使用第一個影片
   images: string[]; // 無影片時，More Works 按這個順序輪播
   videos: string[]; // More Works 優先播放第一個影片
   placeholderNumber: string;

@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --hostname 127.0.0.1 --port 3000",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start --hostname 127.0.0.1 --port 3000",
+    "start": "next start",
     "typecheck": "tsc --noEmit",
     "admin:setup": "node --import tsx scripts/admin-setup.ts",
     "test": "node --import tsx --test tests/*.test.ts"
