@@ -1,4 +1,5 @@
 'use client';
+import type { Project } from '../content/projects/types';
 
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
@@ -21,7 +22,7 @@ const EXIT_SPEED = 0.1; // Headline moves 0.1px per scroll pixel near the top.
 const ENDING_BLUR_PX = 22; // Final video frame progressively blurs after More Works.
 const SEEK_THRESHOLD = 0.008; // Skip sub-frame time writes (seconds).
 
-export default function ScrollVideoPrototype() {
+export default function ScrollVideoPrototype({ selected, more }: { selected: Project[]; more: Project[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const finalAnchorRef = useRef<HTMLDivElement>(null);
@@ -182,8 +183,8 @@ export default function ScrollVideoPrototype() {
     <div ref={finalAnchorRef} className="final-anchor">
       <div className="sequence sequence--final"><h2>{intro.final}</h2></div>
     </div>
-    <SelectedWorks />
-    <MoreWorks />
+    <SelectedWorks works={selected} />
+    <MoreWorks works={more} />
     <EndingSection />
   </div>;
 }

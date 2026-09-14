@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
-import { moreWorks as WORKS, worksCopy } from '../content/works';
+import { worksCopy } from '../content/works';
+import type { Project } from '../content/projects/types';
 
-function Preview({ work, active }: { work: typeof WORKS[number]; active: boolean }) {
+function Preview({ work, active }: { work: Project; active: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [frame, setFrame] = useState(-1);
   useEffect(() => {
@@ -35,12 +36,12 @@ function Preview({ work, active }: { work: typeof WORKS[number]; active: boolean
     return () => { generation++; clearInterval(timer); video?.pause(); motion.removeEventListener('change', sync); document.removeEventListener('visibilitychange', sync); };
   }, [active, work]);
   return <div className="more-work-image">
-    <img src={frame >= 0 && !work.videos.length ? work.images[frame] : work.cover} alt={work.coverAlt} />
+    <img src={frame >= 0 && !work.videos.length ? (work.images[frame] || work.cover) : (work.cover || work.images[0] || "/images/project-placeholder.svg")} alt={work.coverAlt} />
     {work.videos[0] && <video ref={videoRef} src={work.videos[0]} muted loop playsInline preload="none" aria-hidden="true" style={{ opacity: active && frame >= 0 ? 1 : 0 }} />}
   </div>;
 }
 
-export default function MoreWorks() {
+export default function MoreWorks({ works: WORKS }: { works: Project[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number | null>(null);
   const [edges, setEdges] = useState({ start: true, end: false });

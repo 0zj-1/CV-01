@@ -3,3 +3,8 @@ node_modules/
 *.tsbuildinfo
 
 .next-transition/
+
+# Local database, uploaded files and credentials must never be committed.
+data/
+.env*
+!.env.example

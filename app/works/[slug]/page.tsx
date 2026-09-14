@@ -1,25 +1,22 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { allWorks } from '../../../content/works';
+import { publishedProjects } from '../../../lib/db';
 import { projectPageCopy as copy } from '../../../content/project-page';
 import './project.css';
 
-// Build six independent URLs from the same editable project records.
-export const dynamicParams = false;
-export function generateStaticParams() {
-  return allWorks.map(work => ({ slug: work.slug }));
-}
+export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const work = allWorks.find(work => work.slug === slug);
+  const work = publishedProjects().find(work => work.slug === slug);
   return { title: work ? `${work.title} — LIN ZIJING` : 'Project not found' };
 }
 
 export default async function ProjectPage({ params }: Props) {
   const { slug } = await params;
+  const allWorks = publishedProjects();
   const index = allWorks.findIndex(work => work.slug === slug);
   if (index < 0) notFound();
   const work = allWorks[index];

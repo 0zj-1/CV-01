@@ -1,61 +1,38 @@
-# Portfolio opening prototype
+# LIN ZIJING Portfolio
 
-**修改文字與作品請先看 [中文內容修改指南](content/README.md)。**
+Next.js 個人作品網站，包含滾動影片首頁、六個初始作品 demo，以及本機 SQLite 作品後台。
 
-
-Run `npm install` then `npm run dev` in this directory. The current development preview uses http://127.0.0.1:3001 (`npm run dev -- --port 3001`). Validate with `npm run build` and `npm run typecheck`.
-
-- `components/ScrollVideoPrototype.tsx`: scroll target calculation, one on-demand requestAnimationFrame interpolation loop, video seeking, paused GSAP text timeline, and four text sequences.
-- `styles/globals.css`: sticky fullscreen scene, light background, typography and placeholder portfolio section.
-- `public/video/glass-sculpture.mp4`: supplied Abstract Glass Sculpture Background Loop.mp4, copied unchanged from the local Materials folder (the prompt's /mnt/data path is not used on this Mac).
-
-## Adjustments
-
-- Text timing: edit `TIMING` (0–1 scroll fractions) and `WORD_STARTS` at the top of the component. `enter` starts the reveal, `hold` is fully visible, `exit` starts fading, and `end` is fully hidden. The final scene remains visible after its hold point.
-- Scroll length: edit `.scroll-section { height: 450vh; }`. Scrub travel is section height minus one viewport (350vh). After that, only the sticky text layer releases and moves upward. The video is a separate fixed layer, frozen at its final frame while placeholder works scroll above it.
-- Smoothing: `SETTLE_SECONDS = 0.12`; larger values give slower catch-up. `SEEK_THRESHOLD` avoids insignificant time writes.
-- Replace the video at `public/video/glass-sculpture.mp4`, or change the component's video src. Duration is read after metadata loads.
-
-Scroll events only update the normalized target. A single RAF loop exponentially interpolates current progress, drives text and maps it to video duration. An active seek is allowed to complete before another is issued; the newest target wins. The loop sleeps after settling and wakes on scroll, resize, metadata or seek completion. No React state updates occur per frame. The video remains paused and reverses naturally with upward scrolling. Reduced motion exposes static text and removes smoothing.
-
-## Portfolio transition
-
-The video is fixed within `.portfolio-page`, outside the sticky text scene. At 350vh of scroll it settles at the final frame; further scrolling carries the final headline upward and brings `.works-section` into view, with no blank test section. Two clearly labeled placeholder projects stand in for future portfolio content. Scroll back into the intro to reverse the video.
-
-## Slow headline exit
-
-The final headline now uses an independent fixed anchor. After the video reaches its end, it initially moves upward 1px per scroll pixel. At `EXIT_SLOWDOWN_AT = 0.14` (14vh from the top), its speed changes to `EXIT_SPEED = 0.1`. Works keep native 1:1 scrolling and pass in front of the headline. The Selected Works labels, portfolio preamble and debug panel have been removed. These exit values are at the top of the component; motion is reversible and updated within the existing RAF loop.
-
-## More works
-
-`components/MoreWorks.tsx` adds the transparent horizontal gallery after Project 02. Edit the individual files in `content/projects/` and the `moreWorks` list in `content/works.ts`. Native horizontal scrolling, a focusable keyboard-scroll region and previous/next buttons reveal entries beyond the first five; controls disable at either end. The existing fixed final video frame remains behind the section. Gallery layout is under `.more-works` in the global stylesheet.
-
-## Reference ending page
-
-`components/EndingSection.tsx` follows the supplied short reference: invitation headline, four information columns, small print and an oversized cropped FORM wordmark. Reference brand/contact labels are visual demo content, not working external links. The wireframe PNG is an AI-generated approximation, not the original 3D model or animation; the footage does not supply exact typography or all small print.
-
-The footer starts after More Works. In the existing RAF loop, `targetEnding` maps its entry through one viewport to 0–1. `ENDING_BLUR_PX = 22` controls maximum background blur; the video's final time stays fixed. `--ending-progress` controls the invitation, tilted word, wireframe translation/rotation and wordmark reveal. Reverse scrolling clears the blur. The ending section is 170vh with a 100vh sticky stage, giving 70vh of final-page hold. Reduced motion removes the decorative translations. No second animation loop is introduced.
-
-Asset: `public/images/ending-wireframe.png`. Layout: `.ending-*` in the global stylesheet.
-
-## Ending animation
-- `content/footer.ts`: edit `rotatingWords` for the rotating headline. Each word starts 2 seconds after the previous, and its letters enter 45ms apart; the CSS cycle is 8 seconds for four words.
-- `styles/globals.css`: `ending-letter-jump` controls each masked letter jump; `glass-color` controls red / fluorescent green / dark blue holds and transitions.
-- Fixed SVG turbulence and displacement in `EndingSection.tsx` deform the transparent glass silhouette. A GSAP ticker moves the noise field around a circle at constant speed (16-second period, 70-unit radius, fixed displacement 165), with no segmented scale or frequency keyframes. These are lightweight 2D deformations of a rendered glass asset, not a 3D simulation.
-- The final stage has no background fill. The original video remains frozen and blurred underneath.
-- CSS animations and the GSAP deformation ticker pause offscreen and when the document is hidden. Reduced motion shows static branding and a static glass object.
-- Asset: `public/images/ending-glass.png`, generated with the built-in imagegen tool. Prompt: one isolated amorphous translucent ruby-red glass sculpture, asymmetric folded liquid form with three rounded lobes, realistic refraction and white studio reflections, fully visible on a transparent alpha background, no floor, text, or exterior shadow.
-
-## 靜態 HTML 網站
-
-執行 `npm run build:static`（macOS / Linux）會重新生成 `out/`，包含首頁、六個作品獨立頁、JavaScript、CSS、圖片與影片。互動效果由 JavaScript 執行，仍保留在靜態版本中；目前沒有後台或資料庫。
-
-靜態網站根目錄必須設為 `out/`。本機預覽：
+## 開始
 
 ```sh
-python3 -m http.server 3015 --bind 127.0.0.1 --directory out
+npm ci
+npm run admin:setup
+npm run dev
 ```
 
-開啟 http://127.0.0.1:3015/。作品頁位於 `out/works/project-01/index.html` 至 `out/works/project-06/index.html`，可直接開啟 `/works/project-01/` 並重新整理。不要雙擊 HTML 使用 file://，也不要以整個原始碼資料夾作為靜態站根目錄。
+首頁：http://127.0.0.1:3000/
 
-此輸出適合網域根目錄部署，未配置 GitHub Pages 的 `/CV-01/` 子路徑；推送 GitHub 本身不代表已開通線上託管。舊的根目錄 iframe 預覽入口已移除。
+後台：http://127.0.0.1:3000/admin
+
+先看 [後台操作與資料備份指南](docs/ADMIN.md)。管理員帳號由你在本機設定，沒有預設密碼。
+
+## 修改位置
+
+- 作品文字、封面、影片、發布與排序：在 `/admin` 管理。
+- 首頁介紹：`content/intro.ts`。
+- 頁尾文字：`content/footer.ts`。
+- 網站標題：`content/site.ts`。
+- 初始 demo：`content/projects/`，只在第一次建立資料庫時匯入。
+- 詳情頁：`app/works/[slug]/page.tsx`。
+- 首頁動畫：`components/ScrollVideoPrototype.tsx`。
+- 後台畫面：`app/admin/`；接口：`app/api/admin/`。
+- 資料庫／驗證：`lib/`；本機資料與素材：`data/`（不提交 Git）。
+
+```sh
+npm test
+npm run typecheck
+npm run build
+npm start
+```
+
+`out/` 是先前的靜態快照；新版後台需 Node 伺服器，請用以上命令，不要使用 Live Server 或直接開啟 HTML。
