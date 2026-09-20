@@ -1,8 +1,13 @@
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
-import type { Project } from '../content/projects/types';
+import type { CoverCrop, Project } from '../content/projects/types';
 
 export type ManagedProject = Project & { published: boolean; placement: 'selected' | 'more'; order: number };
 export type Store = D1Database;
+
+const defaultCoverCrop: CoverCrop = {
+  normal: { x: 50, y: 50, scale: 1 },
+  hover: { x: 50, y: 50, scale: 1.08 },
+};
 const toHex = (bytes: Uint8Array) => Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
 const fromHex = (hex: string) => Uint8Array.from(hex.match(/.{2}/g) ?? [], byte => Number.parseInt(byte, 16));
 
@@ -35,6 +40,17 @@ function media(value: unknown): string {
   return result;
 }
 
+function cropState(value: unknown, fallback: CoverCrop['normal']) {
+  const state = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>;
+  const number = (input: unknown, defaultValue: number, min: number, max: number) =>
+    typeof input === 'number' && Number.isFinite(input) && input >= min && input <= max ? input : defaultValue;
+  return {
+    x: number(state.x, fallback.x, 0, 100),
+    y: number(state.y, fallback.y, 0, 100),
+    scale: number(state.scale, fallback.scale, 1, 2),
+  };
+}
+
 export function validateProject(value: unknown): ManagedProject {
   if (!value || typeof value !== 'object') throw new Error('作品資料不正確');
   const project = value as Record<string, unknown>;
@@ -43,11 +59,18 @@ export function validateProject(value: unknown): ManagedProject {
   if (project.placement !== 'selected' && project.placement !== 'more') throw new Error('請選擇首頁分區');
   if (typeof project.published !== 'boolean' || !Number.isInteger(project.order) || Number(project.order) < 0 || Number(project.order) > 10000) throw new Error('發布狀態或排序不正確');
   if (!project.detail || typeof project.detail !== 'object') throw new Error('缺少詳情');
+
   const detail = project.detail as Record<string, unknown>;
+  const crop = (project.coverCrop && typeof project.coverCrop === 'object' ? project.coverCrop : {}) as Record<string, unknown>;
+  const coverCrop: CoverCrop = {
+    normal: cropState(crop.normal, defaultCoverCrop.normal),
+    hover: cropState(crop.hover, defaultCoverCrop.hover),
+  };
   const array = (entry: unknown) => {
     if (!Array.isArray(entry) || entry.length > 50) throw new Error('最多 50 個素材');
     return entry.map(media).filter(Boolean);
   };
+
   return {
     id: Number.isInteger(project.id) && Number(project.id) > 0 ? Number(project.id) : 0,
     slug,
@@ -56,13 +79,19 @@ export function validateProject(value: unknown): ManagedProject {
     cover: media(project.cover),
     coverAlt: text(project.coverAlt, 300),
     pdf: media(project.pdf ?? ''),
+    coverCrop,
+    featuredMedia: media(project.featuredMedia ?? ''),
+    morePreviewMedia: media(project.morePreviewMedia ?? ''),
     images: array(project.images),
     videos: array(project.videos),
     placeholderNumber: text(project.placeholderNumber, 20),
     placeholderLabel: text(project.placeholderLabel, 100),
     detail: {
-      category: text(detail.category, 100), year: text(detail.year, 20), headline: text(detail.headline, 300),
-      introduction: text(detail.introduction, 10000), approach: text(detail.approach, 10000),
+      category: text(detail.category, 100),
+      year: text(detail.year, 20),
+      headline: text(detail.headline, 300),
+      introduction: text(detail.introduction, 10000),
+      approach: text(detail.approach, 10000),
     },
     placement: project.placement,
     published: project.published,
