@@ -3,6 +3,10 @@ node_modules/
 *.tsbuildinfo
 
 .next-transition/
+/dist/
+/.vinext/
+/.wrangler/
+worker-configuration.d.ts
 
 # Local database, uploaded files and credentials must never be committed.
 data/

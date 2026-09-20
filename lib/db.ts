@@ -1,8 +1,15 @@
-import { openStore, seedProjects, listProjects, type Store } from './store';
+import { env } from 'cloudflare:workers';
 import { allWorks } from '../content/works';
-let store: Store;
-export function database() {
-  if (!store) { store = openStore(); seedProjects(store, allWorks); }
-  return store;
+import { listProjects, seedProjects } from './store';
+
+let ready: Promise<void> | undefined;
+
+export async function database() {
+  ready ??= seedProjects(env.DB, allWorks);
+  await ready;
+  return env.DB;
 }
-export function publishedProjects() { return listProjects(database(), true); }
+
+export async function publishedProjects() {
+  return listProjects(await database(), true);
+}

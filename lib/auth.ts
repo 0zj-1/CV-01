@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { database } from './db';
 import { validSession } from './store';
 export const sessionCookie = 'cv_admin_session';
-export async function authenticated() { return validSession(database(), (await cookies()).get(sessionCookie)?.value); }
+export async function authenticated() { return validSession(await database(), (await cookies()).get(sessionCookie)?.value); }
 export function sameOrigin(request: Request) {
   // Next may normalize request.url to localhost; compare the browser Origin
   // with the actual Host header rather than that internal hostname.

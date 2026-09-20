@@ -4,6 +4,6 @@ import { revokeSession } from '../../../../lib/store';
 import { guard, sessionCookie } from '../../../../lib/auth';
 export async function POST(request: Request) {
   const denied=await guard(request);if(denied)return denied;
-  const jar=await cookies();revokeSession(database(),jar.get(sessionCookie)?.value||'');jar.delete(sessionCookie);
+  const jar=await cookies();await revokeSession(await database(),jar.get(sessionCookie)?.value||'');jar.delete(sessionCookie);
   return Response.json({ok:true});
 }
