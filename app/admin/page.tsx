@@ -7,5 +7,5 @@ import './admin.css';
 export const dynamic='force-dynamic';
 export default async function AdminPage(){
  if(!await authenticated())redirect('/admin/login');
- return <Manager initial={listProjects(database())}/>;
+ return <Manager initial={await listProjects(await database())}/>;
 }

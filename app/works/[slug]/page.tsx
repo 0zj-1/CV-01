@@ -4,19 +4,20 @@ import { notFound } from 'next/navigation';
 import { publishedProjects } from '../../../lib/db';
 import { projectPageCopy as copy } from '../../../content/project-page';
 import './project.css';
+import PdfPages from '../../../components/PdfPages';
 
 export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const work = publishedProjects().find(work => work.slug === slug);
+  const work = (await publishedProjects()).find(work => work.slug === slug);
   return { title: work ? `${work.title} — LIN ZIJING` : 'Project not found' };
 }
 
 export default async function ProjectPage({ params }: Props) {
   const { slug } = await params;
-  const allWorks = publishedProjects();
+  const allWorks = await publishedProjects();
   const index = allWorks.findIndex(work => work.slug === slug);
   if (index < 0) notFound();
   const work = allWorks[index];
@@ -43,6 +44,7 @@ export default async function ProjectPage({ params }: Props) {
       </video>)}
       {work.images.filter(src => src !== hero).map((src, i) => <img key={src} src={src} loading="lazy" alt={`${work.title} — study ${i + 1}`} />)}
     </div>
+    {work.pdf && <PdfPages src={work.pdf} title={work.title} />}
     <footer className="project-footer"><Link href="/#selected-works">{copy.back}</Link><Link href={`/works/${next.slug}`}>{copy.next}<span>{next.title}</span></Link></footer>
   </main>;
 }

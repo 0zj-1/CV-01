@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cv01-portfolio",
+  "main": "vinext/server/app-router-entry",
+  "compatibility_date": "2026-09-20",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "not_found_handling": "none" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cv01-portfolio",
+      "database_id": "58cc30d0-ea2f-48e2-a77d-5981ea7e7ba6",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
