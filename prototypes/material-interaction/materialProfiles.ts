@@ -47,12 +47,12 @@ export const MATERIAL_PROFILES: MaterialProfileSet = {
     kind: 'soft',
     label: 'Rubber',
     note: 'Shallow tight dent + slight global squash, fast springy rebound',
-    indentation: 0.13,
+    indentation: 0.16,
     radius: 0.62,
     bulge: 0.02,
     squash: 0.07,
-    axisBlend: 0.3,
-    normalSharpness: 1.15,
+    axisBlend: 0.25,
+    normalSharpness: 1.35,
     follow: 0.7,
     translation: 0,
     rotation: 0,
@@ -76,12 +76,12 @@ export const MATERIAL_PROFILES: MaterialProfileSet = {
     kind: 'soft',
     label: 'Foam',
     note: 'Broad soft crater, slow creep back, no bounce',
-    indentation: 0.22,
-    radius: 1.35,
+    indentation: 0.34,
+    radius: 1.15,
     bulge: 0,
     squash: 0.03,
-    axisBlend: 0.8,
-    normalSharpness: 0.8,
+    axisBlend: 0.35,
+    normalSharpness: 1.25,
     follow: 0.22,
     translation: 0,
     rotation: 0,
@@ -130,16 +130,89 @@ export const MATERIAL_PROFILES: MaterialProfileSet = {
 
 export const MATERIAL_ORDER: MaterialType[] = ['balloon', 'rubber', 'foam', 'hard'];
 
-/** Where each body sits on the bench, and the geometry density it is built at. */
-export const STAGE_LAYOUT: Record<
-  MaterialType,
-  { position: [number, number, number]; segments: number }
-> = {
-  balloon: { position: [-3.35, 0.05, 0], segments: 96 },
-  rubber: { position: [-1.1, -0.05, 0], segments: 40 },
-  foam: { position: [1.15, -0.2, 0], segments: 34 },
-  hard: { position: [3.4, -0.05, 0], segments: 6 },
+/** Height of the floor the bodies rest on. */
+export const GROUND_Y = -1.4;
+
+export interface BodyLayout {
+  position: [number, number, number];
+  /** Geometry density. Soft bodies need enough vertices for the dent to bend. */
+  segments: number;
+  /** Baked dimensions, for the bodies built from a rounded block. */
+  size?: [number, number, number];
+  /** Spherify amount of that block: 0 keeps the box, 1 gives a sphere. */
+  roundness?: number;
+  /** Rough half-size, used to normalise the rigid body's lever arm. */
+  bodyRadius?: number;
+}
+
+/**
+ * Where each body sits on the bench and how it is built. Positions put every
+ * body's underside on GROUND_Y, except the balloon which floats a little.
+ */
+export const STAGE_LAYOUT: Record<MaterialType, BodyLayout> = {
+  balloon: { position: [-2.85, -0.15, 0], segments: 96 },
+  rubber: {
+    position: [-0.85, -0.525, 0],
+    segments: 40,
+    size: [1.75, 1.75, 1.75],
+    roundness: 0.55,
+  },
+  foam: { position: [1.1, -0.75, 0], segments: 34, size: [2, 1.3, 2], roundness: 0.2 },
+  hard: {
+    position: [2.9, -0.65, 0],
+    segments: 6,
+    size: [1.5, 1.5, 1.5],
+    roundness: 0.16,
+    bodyRadius: 0.9,
+  },
 };
+
+/**
+ * Surface appearance. Kept here with the physics so a material is described in
+ * exactly one place: the look has to sell the same story as the response.
+ */
+export const BODY_APPEARANCE = {
+  // Taut, glossy, faintly translucent skin.
+  balloon: {
+    color: '#d9433d',
+    roughness: 0.17,
+    metalness: 0,
+    clearcoat: 1,
+    clearcoatRoughness: 0.16,
+    sheen: 0.6,
+    sheenColor: '#ff9a8f',
+    sheenRoughness: 0.5,
+    envMapIntensity: 1.15,
+  },
+  // Dark elastomer: soft sheen, no mirror.
+  rubber: {
+    color: '#2e3339',
+    roughness: 0.62,
+    metalness: 0,
+    clearcoat: 0.22,
+    clearcoatRoughness: 0.55,
+    sheen: 0.25,
+    sheenColor: '#7d8894',
+    envMapIntensity: 0.5,
+  },
+  // Open-cell foam: almost fully diffuse, slight fuzz at grazing angles.
+  foam: {
+    color: '#e7e0cf',
+    roughness: 0.96,
+    metalness: 0,
+    sheen: 0.85,
+    sheenColor: '#fff4df',
+    sheenRoughness: 0.9,
+    envMapIntensity: 0.32,
+  },
+  // Machined metal.
+  hard: {
+    color: '#b6bec7',
+    roughness: 0.3,
+    metalness: 0.82,
+    envMapIntensity: 1.5,
+  },
+} as const;
 
 /** react-spring config for the press-down phase. */
 export function pressSpring(profile: MaterialProfile) {
