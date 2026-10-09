@@ -8,21 +8,44 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "admin:setup": "node --import tsx scripts/admin-setup.ts",
-    "test": "node --import tsx --test tests/*.test.ts"
+    "test": "node --import tsx --test tests/*.test.ts",
+    "dev:vinext": "vite dev --port 3001",
+    "build:vinext": "vite build",
+    "deploy": "vinext-cloudflare deploy",
+    "deploy:dry": "vinext-cloudflare deploy --dry-run",
+    "cf:types": "wrangler types"
   },
   "dependencies": {
-    "better-sqlite3": "^11.10.0",
+    "@react-spring/three": "^10.1.2",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "gsap": "^3.14.2",
+    "leva": "^0.10.1",
     "next": "latest",
+    "pdfjs-dist": "^6.3.289",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "three": "^0.186.0"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^9.6.0",
+    "@cloudflare/vite-plugin": "^1.56.0",
+    "@cloudflare/workers-types": "^5.20260918.1",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.186.0",
+    "@vinext/cloudflare": "^1.0.0-beta.8",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitejs/plugin-rsc": "^0.5.35",
+    "react-server-dom-webpack": "^19.3.0",
     "tsx": "^4.23.13",
-    "typescript": "^5.9.3"
-  }
+    "typescript": "^5.9.3",
+    "vinext": "^1.0.0-beta.10",
+    "vite": "^8.3.0",
+    "wrangler": "^4.135.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "type": "module"
 }

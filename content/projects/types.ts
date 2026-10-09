@@ -13,6 +13,7 @@ export type Project = {
   description: string;
   cover: string; // 主要作品留空時顯示原來的佔位畫面
   coverAlt: string;
+  pdf?: string; // 作品頁會把 PDF 每一頁直接繪製在原內容下方
   coverCrop?: CoverCrop;
   featuredMedia?: string; // 詳情頁首屏素材；留空時優先使用第一個影片
   morePreviewMedia?: string; // 舊資料相容欄位，不再由 More Works 使用

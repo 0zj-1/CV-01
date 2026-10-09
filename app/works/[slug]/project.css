@@ -18,6 +18,8 @@
 .project-footer { margin-top: 100px; align-items: flex-end; }
 .project-footer > a:last-child { text-align: right; }
 .project-footer span { display: block; font-size: clamp(32px, 5vw, 68px); margin-top: 16px; letter-spacing: -.05em; }
+.project-pdf-pages { display: grid; gap: 24px; margin-top: 24px; }
+.project-pdf-pages img { display: block; width: 100%; height: auto; }
 @media (max-width: 640px) {
  .project-heading { padding-top: 64px; }
  .project-nav { font-size: 12px; }
