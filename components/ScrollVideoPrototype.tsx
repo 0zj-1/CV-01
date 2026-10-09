@@ -149,10 +149,21 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', measure);
     reduced.addEventListener('change', motionChange);
-    if (video.readyState >= 1) metadata();
-    if (video.error) error();
+    // Scrubbing needs a seekable video. The production host ignores Range
+    // requests, which leaves a streamed MP4 unseekable, so play it from an
+    // in-memory blob (the whole file preloads anyway); fall back to the URL.
+    let objectUrl = '';
+    fetch(intro.backgroundVideo)
+      .then(response => response.ok ? response.blob() : Promise.reject(new Error(String(response.status))))
+      .then(blob => {
+        if (disposed) return;
+        objectUrl = URL.createObjectURL(blob);
+        video.src = objectUrl;
+      })
+      .catch(() => { if (!disposed) video.src = intro.backgroundVideo; });
     return () => {
       disposed = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
       cancelAnimationFrame(frame);
       context.revert();
       video.removeEventListener('loadedmetadata', metadata);
@@ -166,7 +177,7 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
 
   return <div className="portfolio-page">
     {/* Fixed independently of the intro: its final frame stays behind the works. */}
-    <video ref={videoRef} className="background-video" src={intro.backgroundVideo} muted playsInline preload="auto" aria-hidden="true" />
+    <video ref={videoRef} className="background-video" muted playsInline preload="auto" aria-hidden="true" />
     <section ref={sectionRef} className="scroll-section" aria-label="Portfolio introduction">
       {/* Only the text layer releases: the final headline travels upward with the page. */}
       <div className="scene">
