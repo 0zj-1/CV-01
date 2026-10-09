@@ -1,0 +1,27 @@
+.hero { position: relative; isolation: isolate; width: 100%; height: 100svh; min-height: 680px; overflow: hidden; background: var(--paper); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+.stage { position: absolute; inset: 0; touch-action: none; }
+.header { position: absolute; top: 32px; left: 4vw; right: 4vw; display: flex; justify-content: space-between; align-items: start; font-size: 11px; letter-spacing: .11em; pointer-events: none; }
+.header a { color: inherit; text-decoration: none; pointer-events: auto; }
+.header span { margin-left: auto; margin-right: 8vw; font-size: 10px; line-height: 1.55; }
+.copy { position: absolute; left: 4vw; top: 19%; width: 30%; pointer-events: none; }
+.number { font-size: 10px; letter-spacing: .12em; }
+.copy h1 { font-size: clamp(34px, 4.3vw, 78px); font-weight: 400; line-height: .99; letter-spacing: -.055em; margin: 25px 0 20px; }
+.copy p { max-width: 230px; font-size: 15px; line-height: 1.5; }
+.caption { position: absolute; right: 4vw; bottom: 22%; max-width: 220px; pointer-events: none; }
+.caption span { font-size: 10px; letter-spacing: .12em; }
+.caption p { font-size: 12px; line-height: 1.8; opacity: .75; }
+.footer { position: absolute; bottom: 28px; left: 4vw; right: 4vw; }
+.footer nav { display: flex; gap: 28px; }
+.footer button { font: inherit; background: none; border: none; border-radius: 0; color: inherit; padding: 10px 0; cursor: pointer; font-size: 12px; }
+.footer nav button { opacity: .55; border-bottom: 1px solid transparent; }
+.footer nav button[aria-pressed='true'] { opacity: 1; border-bottom-color: currentColor; }
+.footer button:focus-visible, .header a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.footer button:disabled { cursor: default; }
+.footer nav span { margin-right: 8px; font-size: 10px; }
+.controls { display: flex; align-items: center; gap: 20px; position: absolute; right: 0; bottom: 17px; }
+.controls > span { font-size: 9px; opacity: .55; letter-spacing: .1em; }
+.track { margin-top: 18px; height: 1px; background: color-mix(in srgb, var(--ink) 18%, transparent); }
+.track div { height: 100%; background: var(--ink); transform: scaleX(0); transform-origin: left; }
+.fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 30px; }
+@media(max-width:1000px) { .controls { position: static; justify-content: flex-end; } .copy { width: 28%; } .caption { bottom: 23%; max-width: 150px; } }
+@media(max-width:700px) { .hero { min-height: 740px; } .header { top: 22px; } .header a:last-child { display: none; } .copy { top: 12%; width: 90%; } .copy h1 { font-size: 38px; margin: 15px 0 10px; } .copy p { font-size: 12px; } .caption { bottom: 19%; right: auto; left: 4vw; max-width: none; } .caption p { display: none; } .footer nav { gap: 16px; } .footer nav button { font-size: 10px; text-align: left; } .footer nav span { display: block; margin-bottom: 5px; } }

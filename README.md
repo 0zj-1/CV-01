@@ -1,6 +1,6 @@
 # LIN ZIJING Portfolio
 
-Next.js 個人作品網站，包含滾動影片首頁、六個初始作品 demo，以及以 Cloudflare D1 儲存資料的作品後台。正式網站部署在 Cloudflare Workers。
+Next.js 個人作品網站，包含滾動文字首頁、六個初始作品 demo，以及以 Cloudflare D1 儲存資料的作品後台。正式網站部署在 Cloudflare Workers。
 
 ## 本機啟動
 
@@ -31,6 +31,7 @@ npm run dev:vinext
 - 初始 demo：`content/projects/`，只在第一次建立資料庫時匯入。
 - 詳情頁：`app/works/[slug]/page.tsx`。
 - 首頁動畫：`components/ScrollVideoPrototype.tsx`。
+- 開場覆蓋層：`components/Opening/Opening.tsx`；依 `components/Opening/data/mschn-opening-edit.json` 播放9段、100幀（3.33秒），完成後露出既有影片首頁。MSCHN字體與圖片在 `public/opening/`。Skip與減少動態效果直接露出首頁，後台不播放開場。
 - 後台畫面：`app/admin/`；接口：`app/api/admin/`。
 - 資料庫／驗證：`lib/`；資料儲存在 Cloudflare D1，作品素材使用 R2。
 

@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crumple — cursor lens style switch</title>
+<style>
+/* ==========================================================================
+   Cursor lens style switch
+   --------------------------------------------------------------------------
+   Two full-screen skins of the SAME markup stacked on top of each other.
+   #style-b sits above #style-a and is clipped to a circle that follows the
+   cursor. Clicking grows that circle until it covers the viewport.
+
+   The one rule that makes the lens read as a lens and not as a crossfade of
+   two different pages: both skins are built from one <template>, and a skin
+   may only change paint (colour, gradient, glow, border colour, font-family
+   on elements whose box is pinned in px). Anything that would move a box —
+   font-size, weight, padding, margin, unitless line-height — is declared once
+   in the shared layer below and never overridden.
+   ========================================================================== */
+
+/* --lens-r has to be registered so it can be transitioned. Unregistered
+   custom properties change discretely, which would make the click snap. */
+@property --lens-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --lens-x: 50vw;
+  --lens-y: 50vh;
+  --lens-size: 108px;
+  --ease-lens: cubic-bezier(.76, 0, .24, 1);
+
+  /* Style A — minimal, off-white, brutalist weight */
+  --a-bg: #f0efeb;
+  --a-ink: #111110;
+  --a-ink-soft: #55534c;
+  --a-line: #d7d5cd;
+  --a-accent: #e8422e;
+
+  /* Style B — dark tech, neon mint + electric blue */
+  --b-bg: #080a0e;
+  --b-ink: #e9fff8;
+  --b-ink-soft: #7d93a4;
+  --b-line: #1c2732;
+  --b-neon: #4ff0c3;
+  --b-blue: #6c8cff;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--a-bg);
+}
+
+body {
+  overflow: hidden;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hide the native cursor only while the lens is the cursor. */
+body[data-phase="lens"], body[data-phase="expanding"] { cursor: none; }
+
+/* ==========================================================================
+   Stage
+   ========================================================================== */
+
+.page {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Which skin is on screen and which one lives inside the circle swaps on
+   every switch, so the two parts are classes rather than ids — either layer
+   can play either role, and the page cycles A -> B -> A indefinitely. */
+.page.is-base { z-index: 1; }
+
+.page.is-lens {
+  z-index: 2;
+  /* Clipped-away area also stops hit-testing, so clicks outside the circle
+     fall through to the skin underneath. */
+  clip-path: circle(var(--lens-r) at var(--lens-x) var(--lens-y));
+  transition: --lens-r .5s cubic-bezier(.22, 1, .36, 1);
+  will-change: clip-path;
+}
+
+body[data-phase="lens"] .page.is-lens { --lens-r: var(--lens-size); }
+
+/* The click. One long ease out to well past the far corner. */
+body[data-phase="expanding"] .page.is-lens {
+  --lens-r: 220vmax;
+  transition: --lens-r 1.05s var(--ease-lens);
+}
+
+/* The frame the roles swap on: the incoming lens layer is still sitting at
+   220vmax and has to adopt radius 0 silently. Without this the switch plays
+   itself backwards as a shrinking hole. */
+body.no-anim .page.is-lens,
+body.no-anim .lens-ring { transition: none !important; }
+
+/* ==========================================================================
+   Shared layout — geometry only, no paint. Never overridden per skin.
+   ========================================================================== */
+
+.shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 68px);
+}
+
+/* --- nav --- */
+.nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  height: clamp(66px, 8vh, 92px);
+  flex: 0 0 auto;
+  border-bottom: 1px solid transparent;
+}
+
+.logo {
+  justify-self: start;
+  font-size: 21px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: -.035em;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: clamp(18px, 2.4vw, 38px);
+}
+
+.nav-links a {
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 500;
+  letter-spacing: -.005em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-actions {
+  display: flex;
+  justify-self: end;
+  align-items: center;
+  gap: 10px;
+}
+
+/* --- buttons: box pinned in px so a skin can restyle without reflow --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 22px;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .25s ease, color .25s ease,
+              border-color .25s ease, box-shadow .25s ease;
+}
+
+.btn--lg { height: 56px; padding: 0 34px; font-size: 16px; }
+.btn--text { height: 56px; padding: 0 4px; border-radius: 0; }
+
+/* --- hero --- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 72px);
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: clamp(12px, 3vh, 40px) 0;
+}
+
+.hero-copy { min-width: 0; }
+
+.eyebrow {
+  margin: 0 0 clamp(14px, 2.4vh, 26px);
+  /* px line-height keeps the box fixed while the skin swaps font-family */
+  height: 16px;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.headline {
+  margin: 0;
+  font-size: clamp(38px, 6.1vw, 96px);
+  line-height: 1.01;
+  font-weight: 800;
+  letter-spacing: -.045em;
+}
+
+.headline em { font-style: normal; }
+
+.sub {
+  max-width: 46ch;
+  margin: clamp(16px, 2.6vh, 30px) 0 0;
+  font-size: clamp(14px, 1.15vw, 17px);
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+.cta-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.6vw, 22px);
+  margin-top: clamp(20px, 3.4vh, 40px);
+}
+
+.stats {
+  display: flex;
+  gap: clamp(22px, 3.4vw, 56px);
+  margin: clamp(26px, 4.6vh, 58px) 0 0;
+  padding: clamp(18px, 2.8vh, 30px) 0 0;
+  border-top: 1px solid transparent;
+  list-style: none;
+}
+
+.stats li { display: flex; flex-direction: column; gap: 4px; }
+
+.stats strong {
+  height: 26px;
+  font-size: 22px;
+  line-height: 26px;
+  font-weight: 700;
+  letter-spacing: -.03em;
+}
+
+.stats span {
+  height: 15px;
+  font-size: 11px;
+  line-height: 15px;
+  font-weight: 500;
+  letter-spacing: .04em;
+}
+
+/* --- hero visual: red disc + crumpled ball, or ring + wireframe --- */
+.hero-visual {
+  position: relative;
+  width: 100%;
+  max-width: min(100%, 58vh);
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  justify-self: center;
+  align-self: center;
+}
+
+.visual-layer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.disc {
+  width: 66%;
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  transform: translate(25%, -16%);
+}
+
+.ball-shadow {
+  width: 66%;
+  height: 16%;
+  transform: translateY(150%);
+  border-radius: 50%;
+}
+
+.ball-glow { width: 86%; aspect-ratio: 1; border-radius: 50%; }
+
+.ball {
+  position: relative;
+  width: 94%;
+  aspect-ratio: 1;
+}
+
+.ball svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* Only one ball rendering shows per skin; both keep the same box. */
+#style-a .ball--wire,
+#style-b .ball--solid { display: none; }
+
+/* --- footer ticker --- */
+.ticker {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.6vw, 40px);
+  flex: 0 0 auto;
+  height: clamp(48px, 7vh, 64px);
+  border-top: 1px solid transparent;
+  overflow: hidden;
+}
+
+.ticker span {
+  height: 14px;
+  font-size: 10.5px;
+  line-height: 14px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ticker span:last-child { margin-left: auto; }
+
+/* ==========================================================================
+   Style A — paint only
+   ========================================================================== */
+
+#style-a { background: var(--a-bg); color: var(--a-ink); }
+
+#style-a .nav { border-bottom-color: var(--a-line); }
+#style-a .logo { color: var(--a-ink); }
+#style-a .nav-links a { color: var(--a-ink-soft); }
+#style-a .nav-links a:hover { color: var(--a-ink); }
+
+#style-a .btn--solid {
+  background: var(--a-ink);
+  border-color: var(--a-ink);
+  color: var(--a-bg);
+}
+
+#style-a .btn--ghost { border-color: var(--a-ink); color: var(--a-ink); }
+#style-a .btn--text { color: var(--a-ink); text-decoration: underline; text-underline-offset: 5px; }
+
+#style-a .eyebrow { color: var(--a-accent); }
+#style-a .headline { color: var(--a-ink); }
+#style-a .sub { color: var(--a-ink-soft); }
+#style-a .stats { border-top-color: var(--a-line); }
+#style-a .stats strong { color: var(--a-ink); }
+#style-a .stats span { color: var(--a-ink-soft); }
+
+#style-a .disc { background: var(--a-accent); }
+#style-a .ball-shadow {
+  background: radial-gradient(closest-side, rgba(17,17,16,.34), rgba(17,17,16,0));
+}
+#style-a .ball-glow { background: none; }
+
+#style-a .ticker { border-top-color: var(--a-line); }
+#style-a .ticker span { color: var(--a-ink-soft); }
+
+/* ==========================================================================
+   Style B — dark tech. Same boxes, different light.
+   ========================================================================== */
+
+#style-b {
+  color: var(--b-ink);
+  background:
+    radial-gradient(120% 90% at 78% 14%, rgba(108,140,255,.20), transparent 58%),
+    radial-gradient(90% 80% at 12% 96%, rgba(79,240,195,.14), transparent 60%),
+    linear-gradient(rgba(79,240,195,.045) 1px, transparent 1px) 0 0 / 100% 46px,
+    linear-gradient(90deg, rgba(79,240,195,.045) 1px, transparent 1px) 0 0 / 46px 100%,
+    var(--b-bg);
+}
+
+#style-b .nav { border-bottom-color: var(--b-line); }
+#style-b .logo { color: var(--b-ink); text-shadow: 0 0 18px rgba(79,240,195,.5); }
+
+#style-b .nav-links a,
+#style-b .eyebrow,
+#style-b .stats strong,
+#style-b .stats span,
+#style-b .ticker span {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+#style-b .nav-links a { color: var(--b-ink-soft); }
+#style-b .nav-links a:hover { color: var(--b-neon); }
+
+#style-b .btn--solid {
+  background: linear-gradient(100deg, var(--b-neon), #7affd9);
+  border-color: transparent;
+  color: #04231b;
+  box-shadow: 0 0 0 1px rgba(79,240,195,.5), 0 8px 34px rgba(79,240,195,.32);
+}
+
+#style-b .btn--ghost {
+  border-color: rgba(233,255,248,.28);
+  color: var(--b-ink);
+}
+
+#style-b .btn--text { color: var(--b-neon); text-decoration: underline; text-underline-offset: 5px; }
+
+#style-b .eyebrow { color: var(--b-neon); }
+
+#style-b .headline { color: #ffffff; }
+
+#style-b .headline em {
+  background: linear-gradient(94deg, var(--b-neon) 8%, var(--b-blue) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+#style-b .sub { color: var(--b-ink-soft); }
+#style-b .stats { border-top-color: var(--b-line); }
+#style-b .stats strong { color: var(--b-neon); }
+#style-b .stats span { color: var(--b-ink-soft); }
+
+/* The red disc becomes a cold, hollow orbit ring. */
+#style-b .disc {
+  background: none;
+  border-color: rgba(108,140,255,.55);
+  box-shadow: 0 0 60px rgba(108,140,255,.28), inset 0 0 70px rgba(108,140,255,.12);
+}
+
+/* Glow without a filter: a plain gradient repaints far cheaper than a blur,
+   and the lens repaints this element on every frame. */
+#style-b .ball-glow {
+  background: radial-gradient(closest-side, rgba(79,240,195,.3), rgba(79,240,195,.06) 55%, transparent 72%);
+}
+
+#style-b .ball-shadow {
+  background: radial-gradient(closest-side, rgba(79,240,195,.22), transparent 70%);
+}
+
+#style-b .ticker { border-top-color: var(--b-line); }
+#style-b .ticker span { color: var(--b-ink-soft); }
+
+/* ==========================================================================
+   Lens ring and hint
+   ========================================================================== */
+
+/* Position and scale are kept on the *independent* transform properties, not
+   the transform shorthand: `translate` has to snap to the cursor every frame
+   while `scale` eases on its own, and one shorthand cannot do both. */
+.lens-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(var(--lens-size) * 2);
+  height: calc(var(--lens-size) * 2);
+  margin: calc(var(--lens-size) * -1) 0 0 calc(var(--lens-size) * -1);
+  border: 2px solid rgba(255,255,255,.62);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  /* Inverts against whichever skin is underneath, so one ring reads on both
+     the off-white and the near-black. */
+  mix-blend-mode: difference;
+  translate: var(--lens-x) var(--lens-y);
+  scale: .3;
+  transition: opacity .35s ease, scale .5s cubic-bezier(.22, 1, .36, 1);
+  z-index: 40;
+}
+
+/* Centre dot, so the pointer still has a precise hit point with the native
+   cursor hidden. */
+.lens-ring::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.85);
+}
+
+body[data-phase="lens"] .lens-ring { opacity: 1; scale: 1; }
+
+body[data-phase="expanding"] .lens-ring {
+  opacity: 0;
+  scale: 14;
+  transition: opacity .8s ease-out, scale 1.05s var(--ease-lens);
+}
+
+.hint {
+  position: fixed;
+  bottom: clamp(18px, 3vh, 34px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid rgba(17,17,16,.16);
+  border-radius: 999px;
+  background: rgba(240,239,235,.82);
+  backdrop-filter: blur(6px);
+  color: #55534c;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 600;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity .5s ease, transform .5s ease;
+  z-index: 50;
+}
+
+.hint .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--a-accent);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .35; transform: scale(.7); }
+}
+
+/* The hint is permanent now that clicking cycles both ways. It only ducks
+   out during the sweep, which also hides the moment its colours flip. */
+body[data-phase="expanding"] .hint {
+  opacity: 0;
+  transform: translateX(-50%) translateY(14px);
+}
+
+/* Inverted for the dark skin. */
+body[data-base="b"] .hint {
+  border-color: rgba(79,240,195,.26);
+  background: rgba(8,10,14,.76);
+  color: var(--b-ink-soft);
+}
+
+body[data-base="b"] .hint .dot { background: var(--b-neon); }
+
+@media (prefers-reduced-motion: reduce) {
+  .page.is-lens, .lens-ring, .hint { transition-duration: .01ms !important; }
+  .lens-ring { scale: 1; }
+  .hint .dot { animation: none; }
+}
+
+/* ==========================================================================
+   Narrow screens: stack the hero, shrink the visual
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: clamp(18px, 4vh, 36px);
+  }
+
+  .hero-visual { order: -1; max-width: min(100%, 30vh); }
+  .stats { gap: 22px; }
+  .sub { max-width: none; }
+  .ticker span:not(:first-child):not(:last-child) { display: none; }
+}
+
+@media (max-height: 620px) {
+  .stats, .ticker { display: none; }
+}
+</style>
+</head>
+<body data-phase="idle" data-base="a">
+
+  <!-- Either skin can be the one on screen or the one inside the lens; the
+       is-base / is-lens roles swap on every switch. -->
+  <section id="style-a" class="page is-base" aria-label="Minimal style"></section>
+  <section id="style-b" class="page is-lens" aria-label="Dark tech style" inert></section>
+
+  <div class="lens-ring" aria-hidden="true"></div>
+
+  <p class="hint"><span class="dot"></span>Move to peek &nbsp;·&nbsp; Click to switch styles</p>
+
+  <!--
+    One source of truth for the markup. Cloned into both skins so the two
+    styles cannot drift out of alignment — the lens shows the same boxes
+    under different paint, which is the whole point of the effect.
+  -->
+  <template id="page-template">
+    <div class="shell">
+      <header class="nav">
+        <a class="logo" href="#">crumple</a>
+        <nav class="nav-links">
+          <a href="#">Product</a>
+          <a href="#">Solutions</a>
+          <a href="#">Pricing</a>
+          <a href="#">Resources</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn btn--ghost" href="#">Log in</a>
+          <a class="btn btn--solid" href="#">Sign up</a>
+        </div>
+      </header>
+
+      <main class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Document workflow, reimagined</p>
+          <h1 class="headline">Simple flow of <em>digital docs.</em><br>Toss the paper!</h1>
+          <p class="sub">Contracts, invoices and approvals in one place. Sign, send and
+            track every document without printing a single page.</p>
+          <div class="cta-row">
+            <a class="btn btn--solid btn--lg" href="#">Get started</a>
+            <a class="btn btn--text" href="#">See how it works &rarr;</a>
+          </div>
+          <ul class="stats">
+            <li><strong>2.4M</strong><span>Pages saved</span></li>
+            <li><strong>38s</strong><span>Average signing</span></li>
+            <li><strong>120+</strong><span>Integrations</span></li>
+          </ul>
+        </div>
+
+        <div class="hero-visual">
+          <div class="visual-layer"><div class="disc"></div></div>
+          <div class="visual-layer"><div class="ball-glow"></div></div>
+          <div class="visual-layer"><div class="ball-shadow"></div></div>
+          <div class="visual-layer"><div class="ball ball--solid"></div></div>
+          <div class="visual-layer"><div class="ball ball--wire"></div></div>
+        </div>
+      </main>
+
+      <footer class="ticker">
+        <span>Trusted by 4,000+ teams</span>
+        <span>SOC 2 Type II</span>
+        <span>eIDAS &amp; ESIGN</span>
+        <span>No paper since 2019</span>
+      </footer>
+    </div>
+  </template>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ======================================================================
+     A crumpled paper ball, generated rather than drawn.
+
+     Both skins need the identical object in the identical place — one as
+     solid black paper, one as a glowing wireframe. Generating the mesh once
+     and rendering it twice guarantees that, and means the wireframe is
+     genuinely the same object rather than a second illustration.
+
+     Pipeline: icosahedron -> subdivide -> push each vertex in/out by a hash
+     (neighbours get uncorrelated offsets, which is exactly how creased paper
+     behaves) -> rotate -> orthographic project -> painter's algorithm.
+     ====================================================================== */
+
+  const PHI = (1 + Math.sqrt(5)) / 2;
+
+  const normalize = (v) => {
+    const l = Math.hypot(v[0], v[1], v[2]) || 1;
+    return [v[0] / l, v[1] / l, v[2] / l];
+  };
+
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+
+  const cross = (a, b) => [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0],
+  ];
+
+  function icosahedron() {
+    const verts = [
+      [-1, PHI, 0], [1, PHI, 0], [-1, -PHI, 0], [1, -PHI, 0],
+      [0, -1, PHI], [0, 1, PHI], [0, -1, -PHI], [0, 1, -PHI],
+      [PHI, 0, -1], [PHI, 0, 1], [-PHI, 0, -1], [-PHI, 0, 1],
+    ].map(normalize);
+
+    const faces = [
+      [0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11],
+      [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
+      [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9],
+      [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1],
+    ];
+
+    return { verts, faces };
+  }
+
+  function subdivide({ verts, faces }) {
+    const out = verts.slice();
+    const cache = new Map();
+
+    const midpoint = (a, b) => {
+      const key = a < b ? a + ':' + b : b + ':' + a;
+      const hit = cache.get(key);
+      if (hit !== undefined) return hit;
+      const va = out[a], vb = out[b];
+      out.push(normalize([va[0] + vb[0], va[1] + vb[1], va[2] + vb[2]]));
+      cache.set(key, out.length - 1);
+      return out.length - 1;
+    };
+
+    const next = [];
+    for (const [a, b, c] of faces) {
+      const ab = midpoint(a, b), bc = midpoint(b, c), ca = midpoint(c, a);
+      next.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]);
+    }
+    return { verts: out, faces: next };
+  }
+
+  /* Deterministic value hash — stable across reloads, no seeding needed. */
+  const hash3 = (x, y, z) => {
+    const s = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453;
+    return s - Math.floor(s);
+  };
+
+  /* Snap a coordinate to a lattice, so a whole patch of vertices resolves to
+     one hash value and stays coplanar. */
+  const cell = (value, n) => Math.round(value * n) / n;
+
+  function crumple({ verts, faces }, amount) {
+    return {
+      faces,
+      verts: verts.map((v) => {
+        // Large plates, smaller folds, then a little grain to break up the
+        // straight creases.
+        const plates = hash3(cell(v[0], 2.1), cell(v[1], 2.1), cell(v[2], 2.1)) - 0.5;
+        const folds = hash3(cell(v[0], 4.3) + 3.1, cell(v[1], 4.3), cell(v[2], 4.3) - 1.4) - 0.5;
+        const grain = hash3(v[0] * 9.3 + 7.7, v[1] * 9.3, v[2] * 9.3) - 0.5;
+        const r = 1 + amount * (0.64 * plates + 0.29 * folds + 0.07 * grain);
+        return [v[0] * r, v[1] * r, v[2] * r];
+      }),
+    };
+  }
+
+  function rotate(v, pitch, yaw) {
+    let [x, y, z] = v;
+    let c = Math.cos(yaw), s = Math.sin(yaw);
+    [x, z] = [x * c + z * s, -x * s + z * c];
+    c = Math.cos(pitch); s = Math.sin(pitch);
+    [y, z] = [y * c - z * s, y * s + z * c];
+    return [x, y, z];
+  }
+
+  const VIEW = 400;
+  const BALL_R = 142;
+  const LIGHT = normalize([-0.42, 0.7, 0.58]);
+
+  /** Depth-sorted, shaded facets, ready for either renderer. */
+  function buildFacets() {
+    const mesh = crumple(subdivide(subdivide(icosahedron())), 0.34);
+    const verts = mesh.verts.map((v) => rotate(v, 0.34, -0.62));
+
+    const projected = verts.map((v) => [
+      VIEW / 2 + v[0] * BALL_R,
+      VIEW / 2 - v[1] * BALL_R,
+    ]);
+
+    return mesh.faces
+      .map((face) => {
+        const [a, b, c] = face.map((i) => verts[i]);
+        const centre = [(a[0] + b[0] + c[0]) / 3, (a[1] + b[1] + c[1]) / 3, (a[2] + b[2] + c[2]) / 3];
+
+        let n = normalize(cross(
+          [b[0] - a[0], b[1] - a[1], b[2] - a[2]],
+          [c[0] - a[0], c[1] - a[1], c[2] - a[2]],
+        ));
+        // Crumpling flips the winding on concave facets; force normals
+        // outward so lighting stays consistent.
+        if (dot(n, centre) < 0) n = [-n[0], -n[1], -n[2]];
+
+        return {
+          points: face.map((i) => projected[i].map((p) => p.toFixed(1)).join(',')).join(' '),
+          depth: centre[2],
+          light: Math.max(0, dot(n, LIGHT)),
+        };
+      })
+      // Painter's algorithm: no culling, so a crumpled silhouette keeps
+      // every facet that pokes through.
+      .sort((p, q) => p.depth - q.depth);
+  }
+
+  function renderSolidBall(facets) {
+    const polys = facets.map((f) => {
+      const shade = Math.pow(f.light, 0.85);
+      const sheen = Math.pow(f.light, 16) * 78;
+      const v = Math.min(255, Math.round(5 + 56 * shade + sheen));
+      const fill = 'rgb(' + v + ',' + v + ',' + Math.min(255, v + 4) + ')';
+      // Stroking with the fill colour closes the hairline seams that
+      // antialiasing leaves between adjacent polygons.
+      return '<polygon points="' + f.points + '" fill="' + fill +
+        '" stroke="' + fill + '" stroke-width="0.7"/>';
+    }).join('');
+
+    return '<svg viewBox="0 0 ' + VIEW + ' ' + VIEW + '" aria-hidden="true">' +
+      polys + '</svg>';
+  }
+
+  function renderWireBall(facets) {
+    const polys = facets.map((f) => {
+      const shade = Math.pow(f.light, 0.8);
+      // An opaque-ish fill gives the wireframe real occlusion, so it reads
+      // as one solid object instead of a transparent tangle.
+      const fill = 'rgba(8,11,15,0.88)';
+      const stroke = 'rgba(79,240,195,' + (0.16 + 0.74 * shade).toFixed(3) + ')';
+      const width = (0.6 + 1.5 * shade).toFixed(2);
+      return '<polygon points="' + f.points + '" fill="' + fill +
+        '" stroke="' + stroke + '" stroke-width="' + width +
+        '" stroke-linejoin="round"/>';
+    }).join('');
+
+    return '<svg viewBox="0 0 ' + VIEW + ' ' + VIEW + '" aria-hidden="true">' +
+      polys + '</svg>';
+  }
+
+  /* ======================================================================
+     Build both skins from the one template
+     ====================================================================== */
+
+  const template = document.getElementById('page-template');
+  const styleA = document.getElementById('style-a');
+  const styleB = document.getElementById('style-b');
+
+  const facets = buildFacets();
+  const solidSvg = renderSolidBall(facets);
+  const wireSvg = renderWireBall(facets);
+
+  for (const host of [styleA, styleB]) {
+    host.appendChild(template.content.cloneNode(true));
+    host.querySelector('.ball--solid').innerHTML = solidSvg;
+    host.querySelector('.ball--wire').innerHTML = wireSvg;
+  }
+
+  /* ======================================================================
+     The lens
+
+     Three phases only: idle (nothing showing), lens (following the cursor),
+     expanding (sweeping the viewport). There is no terminal state — when a
+     sweep finishes the two layers trade roles and the cycle starts over, so
+     every click switches, in either direction, forever.
+     ====================================================================== */
+
+  const root = document.documentElement;
+  const body = document.body;
+  const layers = [styleA, styleB];
+
+  const EXPAND_MS = 1050;
+  /* Pointer moves are ignored for a moment after a switch, so a twitch of
+     the hand cannot snap a fresh lens open the instant the sweep lands. */
+  const COOLDOWN_MS = 260;
+  /* Inertia. 0 = frozen, 1 = welded to the cursor. */
+  const FOLLOW = 0.17;
+
+  let phase = 'idle';
+  let baseIndex = 0;          // which layer is currently on screen
+  let cooldownUntil = 0;
+  let targetX = innerWidth / 2;
+  let targetY = innerHeight / 2;
+  let lensX = targetX;
+  let lensY = targetY;
+  let rafId = 0;
+  let lastT = 0;
+  let timer = 0;
+
+  const setPhase = (next) => {
+    phase = next;
+    body.dataset.phase = next;
+  };
+
+  /** Hand the base/lens parts to the right layer and mark the hidden one out. */
+  const applyRoles = () => {
+    layers.forEach((layer, i) => {
+      const isBase = i === baseIndex;
+      layer.classList.toggle('is-base', isBase);
+      layer.classList.toggle('is-lens', !isBase);
+      // inert removes the hidden skin from tab order, hit-testing and the
+      // accessibility tree in a single attribute.
+      layer.toggleAttribute('inert', !isBase);
+    });
+    body.dataset.base = baseIndex === 0 ? 'a' : 'b';
+  };
+
+  const writeLens = () => {
+    root.style.setProperty('--lens-x', lensX.toFixed(1) + 'px');
+    root.style.setProperty('--lens-y', lensY.toFixed(1) + 'px');
+  };
+
+  /* Trailing follow. Frame-rate independent, so the drag feels the same on a
+     60Hz and a 120Hz display instead of twice as snappy. */
+  const tick = (t) => {
+    const dt = lastT ? Math.min((t - lastT) / 1000, 0.05) : 1 / 60;
+    lastT = t;
+
+    const k = 1 - Math.pow(1 - FOLLOW, dt * 60);
+    lensX += (targetX - lensX) * k;
+    lensY += (targetY - lensY) * k;
+    writeLens();
+
+    // Park the loop once it has caught up; the next move restarts it.
+    if (Math.abs(targetX - lensX) < 0.05 && Math.abs(targetY - lensY) < 0.05) {
+      lensX = targetX;
+      lensY = targetY;
+      writeLens();
+      rafId = 0;
+      lastT = 0;
+      return;
+    }
+    rafId = requestAnimationFrame(tick);
+  };
+
+  const startFollow = () => {
+    if (!rafId) {
+      lastT = 0;
+      rafId = requestAnimationFrame(tick);
+    }
+  };
+
+  const stopFollow = () => {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
+    lastT = 0;
+  };
+
+  /**
+   * Trade the two roles over. The layer that just swept in becomes the page;
+   * the one it covered becomes the next lens.
+   */
+  const swapRoles = () => {
+    baseIndex = 1 - baseIndex;
+
+    // The incoming lens layer is still at 220vmax. It has to land on radius 0
+    // in the same frame it changes role, with transitions frozen, or the
+    // sweep plays backwards as a shrinking hole.
+    body.classList.add('no-anim');
+    applyRoles();
+    setPhase('idle');
+    void body.offsetWidth;   // flush the frozen values before unfreezing
+    body.classList.remove('no-anim');
+
+    cooldownUntil = performance.now() + COOLDOWN_MS;
+  };
+
+  const expand = (x, y) => {
+    stopFollow();
+    // Grow from exactly where it was clicked, not from the eased position.
+    lensX = targetX = x;
+    lensY = targetY = y;
+    writeLens();
+
+    setPhase('expanding');
+    clearTimeout(timer);
+    timer = setTimeout(swapRoles, EXPAND_MS);
+  };
+
+  const onMove = (e) => {
+    if (phase === 'expanding') return;
+    targetX = e.clientX;
+    targetY = e.clientY;
+
+    if (phase === 'idle') {
+      if (performance.now() < cooldownUntil) return;
+      // First sighting: drop the lens straight under the cursor rather than
+      // flying it in from wherever it was left.
+      lensX = targetX;
+      lensY = targetY;
+      writeLens();
+      setPhase('lens');
+      return;
+    }
+    startFollow();
+  };
+
+  const onDown = (e) => {
+    if (phase === 'expanding') return;
+    // Touch never fires a move first, so the position is seeded here too.
+    expand(e.clientX, e.clientY);
+  };
+
+  window.addEventListener('pointermove', onMove, { passive: true });
+  window.addEventListener('pointerdown', onDown);
+
+  // Keep the lens sane if the window changes size while nothing is showing.
+  window.addEventListener('resize', () => {
+    if (phase === 'idle') {
+      targetX = lensX = innerWidth / 2;
+      targetY = lensY = innerHeight / 2;
+      writeLens();
+    }
+  });
+
+  applyRoles();
+  writeLens();
+})();
+</script>
+</body>
+</html>

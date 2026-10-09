@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import type { CoverCrop } from '../../content/projects/types';
 import type { ManagedProject } from '../../lib/store';
+import { cropTransform } from '../../lib/cover-crop';
 
 const defaultCoverCrop: CoverCrop = { normal: { x: 50, y: 50, scale: 1 }, hover: { x: 50, y: 50, scale: 1.08 } };
 const empty = (): ManagedProject => ({
@@ -12,7 +13,6 @@ const empty = (): ManagedProject => ({
   detail: { category: '', year: String(new Date().getFullYear()), headline: '', introduction: '', approach: '' },
   published: false, placement: 'more', order: 0,
 });
-const cropTransform = (crop: CoverCrop['normal']) => `translate(${(50 - crop.x) * (crop.scale - 1)}%, ${(50 - crop.y) * (crop.scale - 1)}%) scale(${crop.scale})`;
 
 function CropPreview({ src, label, ratio, value, onChange }: {
   src: string;
