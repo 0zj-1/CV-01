@@ -10,6 +10,6 @@ node_modules/
 worker-configuration.d.ts
 
 # Local database, uploaded files and credentials must never be committed.
-data/
+/data/
 .env*
 !.env.example

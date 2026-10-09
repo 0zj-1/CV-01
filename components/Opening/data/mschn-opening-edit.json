@@ -1,0 +1,72 @@
+{
+  "fps": 30,
+  "totalFrames": 100,
+  "durationSeconds": 3.3333333333333335,
+  "numbering": "start inclusive, end exclusive",
+  "previewOnly": true,
+  "pieces": [
+    {
+      "label": "A42 · 散字",
+      "kind": "clip",
+      "startFrame": 373,
+      "endFrame": 378,
+      "frames": 5
+    },
+    {
+      "label": "A43 · M",
+      "kind": "clip",
+      "startFrame": 378,
+      "endFrame": 381,
+      "frames": 3
+    },
+    {
+      "label": "A03 · 巨大五行",
+      "kind": "clip",
+      "startFrame": 7,
+      "endFrame": 11,
+      "frames": 4
+    },
+    {
+      "label": "A08 · MSCHN組裝",
+      "kind": "clip",
+      "startFrame": 35,
+      "endFrame": 50,
+      "frames": 15
+    },
+    {
+      "label": "A26–28 · X / E / B",
+      "kind": "clip",
+      "startFrame": 263,
+      "endFrame": 276,
+      "frames": 13
+    },
+    {
+      "label": "A31 · Variable",
+      "kind": "clip",
+      "startFrame": 285,
+      "endFrame": 299,
+      "frames": 14
+    },
+    {
+      "label": "A32 · MSCHN收束",
+      "kind": "clip",
+      "startFrame": 299,
+      "endFrame": 315,
+      "frames": 16
+    },
+    {
+      "label": "A24 · MECHANIC 圖片組裝",
+      "kind": "clip",
+      "startFrame": 233,
+      "endFrame": 249,
+      "frames": 16
+    },
+    {
+      "label": "A07 · M45 / CH1 / N 組裝",
+      "kind": "clip",
+      "startFrame": 21,
+      "endFrame": 35,
+      "frames": 14
+    }
+  ]
+}
