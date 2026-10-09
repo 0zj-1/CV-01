@@ -12,5 +12,11 @@
       "database_id": "58cc30d0-ea2f-48e2-a77d-5981ea7e7ba6",
       "migrations_dir": "migrations"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "cv01-media"
+    }
   ]
 }
