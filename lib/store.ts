@@ -1,5 +1,5 @@
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
-import type { CoverCrop, Project } from '../content/projects/types';
+import type { CoverCrop, Project, ProjectTranslation } from '../content/projects/types';
 
 export type ManagedProject = Project & { published: boolean; placement: 'selected' | 'more'; order: number };
 export type Store = D1Database;
@@ -51,6 +51,28 @@ function cropState(value: unknown, fallback: CoverCrop['normal']) {
   };
 }
 
+function validateTranslations(value: unknown): Project['translations'] {
+  if (value === undefined) return undefined;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('翻譯資料不正確');
+  const chinese = (value as Record<string, unknown>)['zh-Hant'];
+  if (chinese === undefined) return {};
+  if (!chinese || typeof chinese !== 'object' || Array.isArray(chinese)) throw new Error('中文翻譯資料不正確');
+  const input = chinese as Record<string, unknown>;
+  const result: ProjectTranslation = {};
+  for (const [key, max] of Object.entries({ title: 160, description: 1000, coverAlt: 300, placeholderLabel: 100 })) {
+    if (input[key] !== undefined) Object.assign(result, { [key]: text(input[key], max) });
+  }
+  if (input.detail !== undefined) {
+    if (!input.detail || typeof input.detail !== 'object' || Array.isArray(input.detail)) throw new Error('中文詳情不正確');
+    const detail = input.detail as Record<string, unknown>;
+    result.detail = {};
+    for (const [key, max] of Object.entries({ category: 100, headline: 300, introduction: 10000, approach: 10000 })) {
+      if (detail[key] !== undefined) Object.assign(result.detail, { [key]: text(detail[key], max) });
+    }
+  }
+  return { 'zh-Hant': result };
+}
+
 export function validateProject(value: unknown): ManagedProject {
   if (!value || typeof value !== 'object') throw new Error('作品資料不正確');
   const project = value as Record<string, unknown>;
@@ -74,6 +96,7 @@ export function validateProject(value: unknown): ManagedProject {
   return {
     id: Number.isInteger(project.id) && Number(project.id) > 0 ? Number(project.id) : 0,
     slug,
+    translations: validateTranslations(project.translations),
     title: text(project.title, 160, true),
     description: text(project.description, 1000),
     cover: media(project.cover),

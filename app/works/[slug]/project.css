@@ -37,3 +37,7 @@
  .project-overview { grid-template-columns: 1fr; padding: 48px 0; gap: 20px; }
  .project-media { grid-template-columns: 1fr; }
 }
+.project-nav { padding-right: 128px; min-height: 32px; align-items: center; }
+.project-overview p { white-space: pre-line; }
+html[lang="zh-Hant"] .project-headline, html[lang="zh-Hant"] .project-overview p { letter-spacing: 0; line-height: 1.65; }
+@media (max-width: 640px) { .project-nav { align-items: flex-start; flex-direction: column; gap: 8px; } .project-heading h1 { overflow-wrap: anywhere; } }

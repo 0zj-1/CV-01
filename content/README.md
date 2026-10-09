@@ -69,3 +69,11 @@ videos: [],
 目前共六個作品（01–06），各自的 `detail` 欄位控制分類、年份、標題、介紹與設計方法。`slug` 決定網址；`images` 和 `videos` 同時供詳情頁與 More Works 預覽使用。詳情頁模板在 `app/works/[slug]/page.tsx`，共用按鈕文案在 `content/project-page.ts`。
 
 首頁主要作品 01–02，More Works 03–06。點擊封面或作品名稱即可跳轉。詳情頁提供返回作品區和下一個作品；影片須點擊播放。所有 demo 文案和素材均為佔位內容。
+
+## 英文與繁體中文
+
+右上角 EN／繁中切換會記住訪客的選擇，跨頁保留，並更新 `html.lang`。切換只更新文字，不重建 3D iframe 或重新下載影片。原有開場字體動畫、圖片、影片及 PDF 內的文字維持原素材。
+
+共用中文文案在 `content/localized-copy.ts`。目前作品的已備翻譯在 `content/project-translations.ts`，只套用於完全相同的原文；修改英文後請同步在後台補上中文。後台「繁體中文文案」可修改作品名稱、首頁說明、圖片描述、分類、詳情標題、介紹和設計方法，儲存於 `translations['zh-Hant']`。明確清空中文欄位時會顯示英文。品牌名稱可保留原文。
+
+作品展示模板為 `components/ProjectDetail.tsx`，資料仍由伺服器讀取。預設搜尋引擎標題仍使用原文。Workers 正式建置使用 `npm run build:vinext`。

@@ -1,0 +1,41 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "height": 900,
+      "samples": 209,
+      "naturalGlyphScale": true,
+      "uniformCanvasScale": true,
+      "photoFrames": 60,
+      "fullbleedPhoto": true
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "samples": 201,
+      "naturalGlyphScale": true,
+      "uniformCanvasScale": true,
+      "photoFrames": 61,
+      "fullbleedPhoto": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "samples": 202,
+      "naturalGlyphScale": true,
+      "uniformCanvasScale": true,
+      "photoFrames": 61,
+      "fullbleedPhoto": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "samples": 202,
+      "naturalGlyphScale": true,
+      "uniformCanvasScale": true,
+      "photoFrames": 60,
+      "fullbleedPhoto": true
+    }
+  ],
+  "errors": []
+}

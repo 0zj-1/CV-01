@@ -3,12 +3,16 @@
 import { useEffect, useId, useRef } from "react";
 import gsap from "gsap";
 
-import { footer } from "../content/footer";
+import { useLocale } from './LocaleProvider';
+import { chineseFooter } from '../content/localized-copy';
+import { footer as englishFooter } from "../content/footer";
 
-const WORDS = footer.rotatingWords;
 
 // Visual demo of the supplied reference footer. Reference labels are not live links.
 export default function EndingSection() {
+  const locale = useLocale();
+  const footer = locale === 'en' ? englishFooter : chineseFooter;
+  const WORDS = footer.rotatingWords;
   const sectionRef = useRef<HTMLElement>(null);
   const glassRef = useRef<HTMLDivElement>(null);
   const shapeRef = useRef<SVGSVGElement>(null);
@@ -91,15 +95,18 @@ export default function EndingSection() {
     };
   }, []);
 
-  return <section ref={sectionRef} className="ending-section" aria-label="Footer">
+  const rotatingWord = <span className="ending-word" aria-label={WORDS.join(", ")}>
+    <span className="ending-word-measure" aria-hidden="true">{WORDS[0]}</span>
+    {WORDS.map((word, index) => <span key={index} className="ending-word-item" aria-hidden="true">
+      {Array.from(word).map((letter, letterIndex) => <span key={letterIndex} className="ending-letter" style={{ animationDelay: `${index * 2 + letterIndex * 0.045}s` }}>{letter}</span>)}
+    </span>)}
+  </span>;
+
+  return <section ref={sectionRef} className="ending-section" aria-label={locale === 'en' ? 'Footer' : '頁尾'}>
     <div className="ending-stage">
       <div className="ending-content">
-        <h2 className="ending-invitation">{footer.headlineBefore}<span className="ending-word" aria-label={WORDS.join(", ")}>
-          <span className="ending-word-measure" aria-hidden="true">{WORDS[0]}</span>
-          {WORDS.map((word, index) => <span key={word} className="ending-word-item" aria-hidden="true">
-            {Array.from(word).map((letter, letterIndex) => <span key={letterIndex} className="ending-letter" style={{ animationDelay: `${index * 2 + letterIndex * 0.045}s` }}>{letter}</span>)}
-          </span>)}
-        </span><br />{footer.headlineAfter}</h2>
+        <h2 className="ending-invitation">{footer.headlineBefore}{locale === 'en' && rotatingWord}<br />{footer.headlineAfter}</h2>
+        {locale === 'zh-Hant' && <p className="ending-disciplines">{rotatingWord}</p>}
         <div className="ending-columns">
           {Object.entries(footer.columns).map(([key, column]) => <div key={key}>
             <p className="ending-label">{column.title}</p>

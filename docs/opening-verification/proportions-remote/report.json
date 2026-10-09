@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "height": 900,
+      "samples": 211,
+      "naturalGlyphScale": true,
+      "uniformCanvasScale": true
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "samples": 202,
+      "naturalGlyphScale": true,
+      "uniformCanvasScale": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "samples": 203,
+      "naturalGlyphScale": true,
+      "uniformCanvasScale": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "samples": 202,
+      "naturalGlyphScale": true,
+      "uniformCanvasScale": true
+    }
+  ],
+  "errors": []
+}

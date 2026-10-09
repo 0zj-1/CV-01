@@ -1,0 +1,29 @@
+{
+  "name": "interactive-3d-p01",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 3011",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 3011",
+    "build:embed": "vite build --mode embed --base /hero/ --outDir ../public/hero --emptyOutDir",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "^0.186.0",
+    "@react-three/fiber": "^9.7.0",
+    "@react-three/drei": "^10.7.0",
+    "@react-three/rapier": "^2.2.0",
+    "leva": "^0.10.1"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0",
+    "@vitejs/plugin-react": "^6.1.0"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

@@ -2,9 +2,11 @@
 
 import { useEffect,useState,type ReactNode } from 'react';
 import { ResumeIntro } from './ResumeIntro/ResumeIntro';
+import { useLocale } from '../LocaleProvider';
 import styles from './opening.module.css';
 
 export default function Opening({children}:{children:ReactNode}){
+ const locale=useLocale();
  const [complete,setComplete]=useState(false);
  useEffect(()=>{
   if(complete)return;
@@ -13,7 +15,7 @@ export default function Opening({children}:{children:ReactNode}){
   return ()=>{document.body.style.overflow=previous;};
  },[complete]);
  return <>
-  {!complete&&<div className={styles.overlay} data-opening="active" role="region" aria-label="Opening animation">
+  {!complete&&<div className={styles.overlay} data-opening="active" role="region" aria-label={locale === 'en' ? 'Opening animation' : '開場動畫'}>
    <ResumeIntro openingEdit playOnce onComplete={()=>{
     setComplete(true);
     // The 3D hero waits for this so its start-up work never stutters the intro.

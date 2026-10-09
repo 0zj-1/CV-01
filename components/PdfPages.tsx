@@ -1,8 +1,10 @@
 'use client';
 
+import { useLocale } from './LocaleProvider';
 import { useEffect, useRef, useState } from 'react';
 
 export default function PdfPages({ src, title }: { src: string; title: string }) {
+  const locale = useLocale();
   const container = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<'loading'|'ready'|'error'>('loading');
 
@@ -46,7 +48,7 @@ export default function PdfPages({ src, title }: { src: string; title: string })
           urls.push(url);
           const image = document.createElement('img');
           image.src = url;
-          image.alt = `${title} — PDF 第 ${number} 頁`;
+          image.alt = `${title} — PDF ${number}`;
           image.width = Math.ceil(viewport.width);
           image.height = Math.ceil(viewport.height);
           image.loading = 'lazy';
@@ -67,9 +69,9 @@ export default function PdfPages({ src, title }: { src: string; title: string })
     };
   }, [src, title]);
 
-  return <section aria-label={`${title} PDF 頁面`}>
+  return <section aria-label={`${title} PDF`}>
     <div ref={container} className="project-pdf-pages" />
-    {state === 'loading' && <p role="status">正在載入作品頁面…</p>}
-    {state === 'error' && <p role="alert">PDF 頁面未能載入。<a href={src} target="_blank" rel="noreferrer">開啟原文件</a></p>}
+    {state === 'loading' && <p role="status">{locale === 'en' ? 'Loading project pages…' : '正在載入作品頁面…'}</p>}
+    {state === 'error' && <p role="alert">{locale === 'en' ? 'PDF pages could not load. ' : 'PDF 頁面未能載入。'}<a href={src} target="_blank" rel="noreferrer">{locale === 'en' ? 'Open original document' : '開啟原文件'}</a></p>}
   </section>;
 }

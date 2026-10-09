@@ -1,12 +1,15 @@
 'use client';
 import type { Project } from '../content/projects/types';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import MoreWorks from './MoreWorks';
 import EndingSection from './EndingSection';
 import SelectedWorks from './SelectedWorks';
-import { intro } from '../content/intro';
+import HeroGeometry from './HeroGeometry/HeroGeometry';
+import { useLocale } from './LocaleProvider';
+import { chineseIntro } from '../content/localized-copy';
+import { intro as englishIntro } from '../content/intro';
 
 // Normalized scroll positions: enter → fully visible → start exit → hidden.
 const TIMING = {
@@ -19,10 +22,13 @@ const WORD_STARTS = [0.575, 0.605, 0.635, 0.665];
 const SETTLE_SECONDS = 0.12; // Larger = slower, softer catch-up after scrolling.
 const EXIT_SLOWDOWN_AT = 0.14; // Slow down when headline reaches 14vh from the top.
 const EXIT_SPEED = 0.1; // Headline moves 0.1px per scroll pixel near the top.
-const ENDING_BLUR_PX = 22; // Final video frame progressively blurs after More Works.
+const BACKGROUND_BLUR_PX = 22; // Shared by the opening and ending.
 const SEEK_THRESHOLD = 0.008; // Skip sub-frame time writes (seconds).
 
 export default function ScrollVideoPrototype({ selected, more }: { selected: Project[]; more: Project[] }) {
+  const locale = useLocale();
+  const intro = locale === 'en' ? englishIntro : chineseIntro;
+  const [videoState, setVideoState] = useState<'loading' | 'ready' | 'error'>('loading');
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const finalAnchorRef = useRef<HTMLDivElement>(null);
@@ -33,6 +39,11 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
     const video = videoRef.current!;
     const page = section.parentElement!;
     const ending = page.querySelector<HTMLElement>('.ending-section')!;
+    const hero = page.querySelector<HTMLElement>('[data-hero]')!;
+    let heroTop = 0;
+    let heroHeight = 1;
+    let targetOpening = 1;
+    let currentOpening = 1;
     let endingStart = 0;
     let viewportHeight = window.innerHeight;
     let targetEnding = 0;
@@ -40,7 +51,6 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
     const finalAnchor = finalAnchorRef.current!;
     let exitScroll = 0;
     let normalExitDistance = 0;
-    const statusLabel = statusRef.current!;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     let duration = 0;
     let sectionTop = 0;
@@ -92,9 +102,12 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
       if (Math.abs(targetProgress - currentProgress) < 0.0001) currentProgress = targetProgress;
       currentEnding += (targetEnding - currentEnding) * alpha;
       if (Math.abs(targetEnding - currentEnding) < 0.0001) currentEnding = targetEnding;
-      video.style.filter = `blur(${(currentEnding * ENDING_BLUR_PX).toFixed(2)}px)`;
+      currentOpening += (targetOpening - currentOpening) * alpha;
+      if (Math.abs(targetOpening - currentOpening) < 0.0001) currentOpening = targetOpening;
+      const backgroundBlend = Math.max(currentOpening, currentEnding);
+      video.style.filter = `blur(${(backgroundBlend * BACKGROUND_BLUR_PX).toFixed(2)}px)`;
       // Slight overscan prevents transparent blur edges; layout and video time stay fixed.
-      video.style.transform = `scale(${1 + currentEnding * 0.055})`;
+      video.style.transform = `scale(${1 + backgroundBlend * 0.055})`;
       page.style.setProperty('--ending-progress', currentEnding.toFixed(4));
       timeline.progress(currentProgress);
       const desiredTime = currentProgress * duration;
@@ -110,7 +123,7 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
       const exitY = Math.min(exitScroll, normalExitDistance)
         + Math.max(0, exitScroll - normalExitDistance) * EXIT_SPEED;
       finalAnchor.style.transform = reduced.matches ? '' : `translateY(${-exitY}px)`;
-      if (!settled || currentEnding !== targetEnding) frame = requestAnimationFrame(tick);
+      if (!settled || currentEnding !== targetEnding || currentOpening !== targetOpening) frame = requestAnimationFrame(tick);
       else lastFrame = 0;
     };
     const wake = () => {
@@ -118,6 +131,7 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
     };
     const onScroll = () => {
       // Cache geometry on resize only; raw scroll events only update a normalized target.
+      targetOpening = 1 - Math.max(0, Math.min(1, (window.scrollY - heroTop) / heroHeight));
       targetEnding = Math.max(0, Math.min(1, (window.scrollY - endingStart) / viewportHeight));
       exitScroll = Math.max(0, window.scrollY - sectionTop - scrollDistance);
       targetProgress = Math.max(0, Math.min(1, (window.scrollY - sectionTop) / scrollDistance));
@@ -125,6 +139,8 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
     };
     const measure = () => {
       viewportHeight = window.innerHeight;
+      heroTop = hero.getBoundingClientRect().top + window.scrollY;
+      heroHeight = Math.max(1, hero.offsetHeight);
       endingStart = ending.getBoundingClientRect().top + window.scrollY - viewportHeight;
       sectionTop = section.getBoundingClientRect().top + window.scrollY;
       // 450vh section minus the 100vh sticky scene = 350vh of scrub travel.
@@ -136,10 +152,10 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
       if (!Number.isFinite(video.duration) || video.duration <= 0) return;
       duration = video.duration;
       video.pause();
-      statusLabel.textContent = '';
+      setVideoState('ready');
       wake();
     };
-    const error = () => { statusLabel.textContent = intro.videoError; };
+    const error = () => { setVideoState('error'); };
     const motionChange = () => { buildTimeline(); wake(); };
     buildTimeline();
     measure();
@@ -178,17 +194,18 @@ export default function ScrollVideoPrototype({ selected, more }: { selected: Pro
   return <div className="portfolio-page">
     {/* Fixed independently of the intro: its final frame stays behind the works. */}
     <video ref={videoRef} className="background-video" muted playsInline preload="auto" aria-hidden="true" />
-    <section ref={sectionRef} className="scroll-section" aria-label="Portfolio introduction">
+    <HeroGeometry />
+    <section ref={sectionRef} className="scroll-section" aria-label={locale === 'en' ? 'Portfolio introduction' : '作品集介紹'}>
       {/* Only the text layer releases: the final headline travels upward with the page. */}
       <div className="scene">
         <div className="text-sequences">
           <h1 className="sequence sequence--first">{intro.first.line}<br /><strong>{intro.first.emphasis}</strong></h1>
           <h2 className="sequence sequence--second">{intro.second.line}<br /><strong>{intro.second.emphasis}</strong></h2>
           <p className="sequence sequence--words">
-            {intro.processWords.map(word => <span className="process-word" key={word}>{word}</span>)}
+            {intro.processWords.map((word, index) => <span className="process-word" key={index}>{word}</span>)}
           </p>
         </div>
-        <p ref={statusRef} className="video-status" role="status">{intro.loading}</p>
+        <p ref={statusRef} className="video-status" role="status">{videoState === 'loading' ? intro.loading : videoState === 'error' ? intro.videoError : ''}</p>
       </div>
     </section>
     <div ref={finalAnchorRef} className="final-anchor">

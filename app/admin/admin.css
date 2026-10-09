@@ -49,3 +49,6 @@
 .crop-preview-media { display:block; width:100%; aspect-ratio:1; object-fit:cover; background:#ddd; }
 @media(max-width:700px){.crop-previews{grid-template-columns:1fr;}.crop-previews--more{display:grid;}.crop-previews--more .crop-preview-wrap:nth-child(2){width:auto;}.crop-preview--more{height:220px;}}
 @media(max-width:700px){.admin-grid,.admin-row{grid-template-columns:1fr;}}
+.admin-translations { border-top: 1px solid #ddd; padding-top: 16px; }
+.admin-translations summary { cursor: pointer; font-weight: 600; }
+.admin-translations label { display: grid; gap: 8px; margin-top: 16px; }

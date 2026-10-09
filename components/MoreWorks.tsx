@@ -3,11 +3,16 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
-import { worksCopy } from '../content/works';
+import { useLocale } from './LocaleProvider';
+import { localizeProject } from '../lib/locale';
+import { chineseWorks } from '../content/localized-copy';
+import { worksCopy as englishWorks } from '../content/works';
 import type { Project } from '../content/projects/types';
 import { cropTransform } from '../lib/cover-crop';
 
 function Preview({ work, active }: { work: Project; active: boolean }) {
+  const locale = useLocale();
+  const text = localizeProject(work, locale);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [frame, setFrame] = useState(-1);
   const previewMedia = work.videos[0];
@@ -45,12 +50,14 @@ function Preview({ work, active }: { work: Project; active: boolean }) {
     '--cover-hover-transform': cropTransform(work.coverCrop?.hover ?? { x: 50, y: 50, scale: 1.08 }),
   } as React.CSSProperties;
   return <div className="more-work-image" style={cropStyle}>
-    <img src={frame >= 0 && !previewVideo ? (work.images[frame] || work.cover) : (work.cover || work.images[0] || "/images/project-placeholder.svg")} alt={work.coverAlt} />
+    <img src={frame >= 0 && !previewVideo ? (work.images[frame] || work.cover) : (work.cover || work.images[0] || "/images/project-placeholder.svg")} alt={text.coverAlt} />
     {previewVideo && <video ref={videoRef} src={previewMedia} muted loop playsInline preload="none" aria-hidden="true" style={{ opacity: active && frame >= 0 ? 1 : 0 }} />}
   </div>;
 }
 
 export default function MoreWorks({ works: WORKS }: { works: Project[] }) {
+  const locale = useLocale();
+  const worksCopy = locale === 'en' ? englishWorks : chineseWorks;
   const trackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number | null>(null);
   const [edges, setEdges] = useState({ start: true, end: false });
@@ -77,10 +84,10 @@ export default function MoreWorks({ works: WORKS }: { works: Project[] }) {
   return <section className="more-works" aria-labelledby="more-works-heading">
     <div className="more-works-panel">
       <header className="more-works-header"><h2 id="more-works-heading">{worksCopy.heading}</h2><p>{worksCopy.subtitleLine1}<br />{worksCopy.subtitleLine2}</p></header>
-      <div ref={trackRef} id="other-works-track" className="more-works-track" tabIndex={0} role="region" aria-label="Other projects, scroll horizontally" onScroll={() => { syncEdges(); setActive(null); }} onMouseLeave={() => setActive(null)}>
-        {WORKS.map(work => <Link href={`/works/${work.slug}`} className="more-work" key={work.id} data-active={active === work.id} style={{ flexBasis: active === null ? "calc((100% - 24px) / 3)" : active === work.id ? "calc((100% - 24px) / 2)" : `calc((100% - 24px) / 3 * ${1 - 0.5 / Math.max(1, WORKS.length - 1)})` }} onMouseEnter={() => setActive(work.id)} onFocus={() => setActive(work.id)} onBlur={() => setActive(null)} aria-label={`View ${work.title}`}>
+      <div ref={trackRef} id="other-works-track" className="more-works-track" tabIndex={0} role="region" aria-label={locale === 'en' ? 'Other projects, scroll horizontally' : '其他作品，可橫向捲動'} onScroll={() => { syncEdges(); setActive(null); }} onMouseLeave={() => setActive(null)}>
+        {WORKS.map(work => <Link href={`/works/${work.slug}`} className="more-work" key={work.id} data-active={active === work.id} style={{ flexBasis: active === null ? "calc((100% - 24px) / 3)" : active === work.id ? "calc((100% - 24px) / 2)" : `calc((100% - 24px) / 3 * ${1 - 0.5 / Math.max(1, WORKS.length - 1)})` }} onMouseEnter={() => setActive(work.id)} onFocus={() => setActive(work.id)} onBlur={() => setActive(null)} aria-label={`${locale === 'en' ? 'View' : '查看'} ${localizeProject(work, locale).title}`}>
             <Preview work={work} active={active === work.id} />
-            <h3>{work.title}</h3><p>{work.description}</p>
+            <h3>{localizeProject(work, locale).title}</h3><p>{localizeProject(work, locale).description}</p>
           </Link>)}
 
       </div>

@@ -1,5 +1,6 @@
 // 每個作品共用的欄位。素材網址以 /projects/ 開頭，不寫 public/。
 export type Project = {
+  translations?: { 'zh-Hant'?: ProjectTranslation };
   id: number;
   slug: string; // 網址名稱，例如 project-01
   detail: {
@@ -26,4 +27,8 @@ export type Project = {
 export type CoverCrop = {
   normal: { x: number; y: number; scale: number };
   hover: { x: number; y: number; scale: number };
+};
+
+export type ProjectTranslation = Partial<Pick<Project, 'title' | 'description' | 'coverAlt' | 'placeholderLabel'>> & {
+  detail?: Partial<Pick<Project['detail'], 'category' | 'headline' | 'introduction' | 'approach'>>;
 };

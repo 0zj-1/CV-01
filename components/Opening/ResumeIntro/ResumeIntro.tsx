@@ -7,6 +7,7 @@ import { openingCanvas,openingBox } from './responsive';
 import { advancePlayback } from './playback';
 import { OPENING_EDIT,OPENING_FRAMES,openingSourceFrame } from './openingEdit';
 import { loadIntroFont } from './font';
+import { useLocale } from '../../LocaleProvider';
 import { INTRO_COPY } from './copy';
 import type { IntroProps,IntroHandle,Layer,Scene } from './types';
 const lightGears='/opening/gears-light.jpg';
@@ -18,6 +19,7 @@ type Metrics={bbox:DOMRect};
 const variantKey=(l:Layer)=>`${resolveText(l.text)}|${l.fontWeight}|${l.italic?1:0}`;
 export const ResumeIntro=forwardRef<IntroHandle,IntroProps>(function ResumeIntro({loop=false,playOnce=true,autoplay=true,
  onComplete,onFrame,portrait=false,showSkip=true,className='',openingEdit=false,staticIdentity=false},ref){
+ const locale=useLocale();
  const uid=useId().replaceAll(':','');
  const svgRef=useRef<SVGSVGElement>(null),hostRef=useRef<HTMLDivElement>(null);
  const backgroundRef=useRef<HTMLImageElement>(null),viewport=useRef({width:576,height:1280});
@@ -176,6 +178,6 @@ export const ResumeIntro=forwardRef<IntroHandle,IntroProps>(function ResumeIntro
    </g>)}
    <rect width="100%" height="100%" filter={`url(#${uid}-grain)`} opacity=".023" pointerEvents="none"/>
   </svg>
-  {showSkip&&<button className="intro-skip" onClick={()=>api.current.skip()}>{INTRO_COPY.skip} /</button>}
+  {showSkip&&<button className="intro-skip" onClick={()=>api.current.skip()}>{locale === 'en' ? INTRO_COPY.skip : '跳過開場'} /</button>}
  </div>;
 });

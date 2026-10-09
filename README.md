@@ -25,7 +25,10 @@ npm run dev:vinext
 ## 修改位置
 
 - 作品文字、封面、影片、發布與排序：在 `/admin` 管理。
-- 首頁介紹：`content/intro.ts`。
+- 首頁封面與雙語小字：`content/hero.ts`；主標固定為 PORTFOLIO。
+- 首頁介紹：`content/intro.ts`；繁中內容：`content/localized-copy.ts`。
+- 中英切換：`components/LocaleProvider.tsx`；作品翻譯：`content/project-translations.ts`。
+- 首頁互動 3D 原始碼：`hero-scene/`；嵌入式產物：`public/hero/`。
 - 頁尾文字：`content/footer.ts`。
 - 網站標題：`content/site.ts`。
 - 初始 demo：`content/projects/`，只在第一次建立資料庫時匯入。
@@ -53,3 +56,16 @@ GitHub 倉庫需設定一個 Actions secret：
 設定位置：GitHub 倉庫的 **Settings → Secrets and variables → Actions → New repository secret**。設定完成後，推送 `main` 或在 **Actions → Deploy to Cloudflare Workers → Run workflow** 即可部署。
 
 `out/` 是先前的靜態快照；目前版本需透過 vinext／Cloudflare Workers 執行，請勿使用 Live Server 或直接開啟 HTML。
+
+## 重建首頁 3D
+
+`hero-scene` 包含 P1/P2/P3 模型、材質、互動、性能調整與文字穿插的完整原始碼。需要 Node.js 22.12 以上，使用鎖定的依賴重建：
+
+```sh
+npm --prefix hero-scene ci
+npm --prefix hero-scene test
+npm --prefix hero-scene run build:embed
+npm run build:vinext
+```
+
+`build:embed` 會更新 `public/hero/`。將原始碼與產物一併提交，再依原本流程部署網站。獨立調整模型可用 `npm --prefix hero-scene run dev`；網站嵌入模式使用 `cover` 參數啟用標題與小物件的分層，P1 的球體保留原本後方位置。
