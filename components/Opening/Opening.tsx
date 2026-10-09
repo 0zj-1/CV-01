@@ -14,7 +14,11 @@ export default function Opening({children}:{children:ReactNode}){
  },[complete]);
  return <>
   {!complete&&<div className={styles.overlay} data-opening="active" role="region" aria-label="Opening animation">
-   <ResumeIntro openingEdit playOnce onComplete={()=>setComplete(true)}/>
+   <ResumeIntro openingEdit playOnce onComplete={()=>{
+    setComplete(true);
+    // The 3D hero waits for this so its start-up work never stutters the intro.
+    window.dispatchEvent(new Event('opening:complete'));
+   }}/>
   </div>}
   <div inert={!complete}>{children}</div>
  </>;
