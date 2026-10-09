@@ -5,8 +5,7 @@ import Link from 'next/link';
 
 import { worksCopy } from '../content/works';
 import type { Project } from '../content/projects/types';
-
-const cropTransform = (crop: { x: number; y: number; scale: number }) => `translate(${(50 - crop.x) * (crop.scale - 1)}%, ${(50 - crop.y) * (crop.scale - 1)}%) scale(${crop.scale})`;
+import { cropTransform } from '../lib/cover-crop';
 
 function Preview({ work, active }: { work: Project; active: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);

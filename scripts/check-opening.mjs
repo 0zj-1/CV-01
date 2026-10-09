@@ -1,0 +1,43 @@
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const require=createRequire('/Users/0zj/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json');
+const {chromium}=require('playwright');
+const out=process.argv[2]?'docs/opening-verification/remote':'docs/opening-verification';await mkdir(out,{recursive:true});
+const browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+const page=await browser.newPage({viewport:{width:1440,height:900}});const errors=[],failed=[];
+page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)failed.push(`${r.status()} ${r.url()}`)});
+let releaseFonts;const held=new Promise(r=>releaseFonts=r);
+await page.route('**/opening/*.otf',async route=>{await held;await route.continue()});
+await page.goto(process.argv[2]??'http://127.0.0.1:3001/',{waitUntil:'domcontentloaded'});
+await page.waitForSelector('[data-opening="active"]');
+await page.waitForFunction(()=>document.querySelector('[data-opening="active"] .intro-artwork')?.dataset.frame==='0');
+await page.waitForTimeout(300);
+assert.equal(await page.locator('[data-opening="active"] .intro-artwork').getAttribute('data-frame'),'0');
+assert.equal(await page.locator('[data-opening="active"] .intro-artwork').getAttribute('data-source-frame'),'373');
+assert.equal(await page.locator('main').evaluate(e=>e.parentElement.inert),true);
+assert.equal(await page.locator('video.background-video').count(),0);
+await page.evaluate(()=>{
+ window.openingObserved={start:0,end:0,frames:[]};
+ const record=()=>{const o=window.openingObserved,s=document.querySelector('[data-opening="active"] .intro-artwork');
+ if(s){const f=Number(s.dataset.frame);if(f>0&&!o.start)o.start=performance.now()-f/30*1000;
+ if(o.start)o.frames.push({frame:f,source:Number(s.dataset.sourceFrame)});requestAnimationFrame(record)}else o.end=performance.now()};requestAnimationFrame(record);
+});
+releaseFonts();await page.screenshot({path:`${out}/opening.png`});
+await page.waitForSelector('[data-opening="active"]',{state:'detached',timeout:15000});
+await page.waitForFunction(()=>window.openingObserved.end>0);
+const observed=await page.evaluate(()=>window.openingObserved);const duration=observed.end-observed.start;
+assert.ok(duration>3200&&duration<3750,`duration ${duration}`);
+for(const sample of observed.frames){const f=sample.frame;const spans=[[0,5,373],[5,8,378],[8,12,7],[12,27,35],[27,40,263],[40,54,285],[54,70,299],[70,86,233],[86,100,21]];const [start,end,source]=spans.find(([a,b])=>f>=a&&f<b);assert.ok(Math.abs(sample.source-(source+Math.min(f-start,end-start-1)))<.001)}
+assert.equal(await page.locator('main').evaluate(e=>e.parentElement.inert),false);
+assert.equal(await page.locator('.scroll-section').count(),1);
+assert.match(await page.locator('.sequence--first').innerText(),/structure and imagination/);
+assert.equal(await page.evaluate(()=>document.body.style.overflow),'');
+await page.screenshot({path:`${out}/homepage.png`});
+await page.reload();await page.waitForSelector('[data-opening="active"]');
+await page.getByRole('button',{name:'Skip intro /',exact:true}).click();await page.waitForSelector('[data-opening="active"]',{state:'detached'});
+await page.emulateMedia({reducedMotion:'reduce'});await page.reload();await page.waitForSelector('[data-opening="active"]',{state:'detached'});
+for(const width of [1440,768,390]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth))}
+await page.goto(new URL('/admin',process.argv[2]??'http://127.0.0.1:3001/').href);assert.equal(await page.locator('[data-opening="active"]').count(),0);
+assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
+const report={durationMs:duration,expectedFrames:100,sourceSamples:observed.frames,slowFontWait:true,homepagePreRendered:true,skip:true,reloadOpening:true,reducedMotion:true,existingHomepagePreserved:true,adminUnaffected:true,errors,failed};await writeFile(`${out}/report.json`,JSON.stringify(report,null,2));await browser.close();console.log(JSON.stringify({...report,sourceSamples:observed.frames.length}));

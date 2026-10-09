@@ -1,0 +1,22 @@
+export type IntroColor='black'|'red'|'light';
+export type TextRef={kind:'copy'|'glyph';key:string;index?:number;charIndex?:number};
+export type MotionKey={frame:number;x:number;y:number;rotation:number;scale:number};
+export type LayerKey={frame:number;x?:number;y?:number;width?:number;height?:number;rotation?:number;skewX?:number;
+ fontWeight?:number;italic?:boolean;text?:TextRef;visible?:boolean;opacity?:number;color?:IntroColor;
+ imageFill?:'gears-light'|'gears-dark';ringStroke?:number;easing?:'linear'|'hold'|'ease-out'};
+export type Layer={
+ id:string;text:TextRef;x:number;y:number;width:number;height:number;
+ fontSize:number;minFontSize:number;maxFontSize:number;fontWeight:number;
+ letterSpacing:number;lineHeight:number;alignment:'start'|'center'|'end';
+ color:IntroColor;rotation:number;italic?:boolean;overflow:'visible'|'hidden';
+ glyphScale:number;glyphOffsetX:number;glyphOffsetY:number;
+ fit:'contain'|'mass';imageFill?:'gears-light'|'gears-dark';
+ keyframes?:LayerKey[];visible?:boolean;opacity?:number;skewX?:number;ring?:boolean;ringStroke?:number;
+};
+export type Scene={id:string;startFrame:number;endFrame:number;background:IntroColor;
+ layers:Layer[];texture?:'scratch'|'gears-dark';textureMotion?:MotionKey[];label:string};
+export type IntroHandle={play:()=>void;pause:()=>void;seek:(frame:number)=>void;
+ skip:()=>void;getFrame:()=>number;isPlaying:()=>boolean;getScene:()=>string};
+export type IntroProps={loop?:boolean;playOnce?:boolean;autoplay?:boolean;
+ onComplete?:()=>void;onFrame?:(frame:number,scene:Scene)=>void;
+ portrait?:boolean;showSkip?:boolean;className?:string;openingEdit?:boolean;staticIdentity?:boolean};

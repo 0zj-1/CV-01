@@ -1,0 +1,24 @@
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-XS.otf"); font-display: swap; font-weight: 300; font-style: normal; }
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-XSItalic.otf"); font-display: swap; font-weight: 300; font-style: italic; }
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-S.otf"); font-display: swap; font-weight: 400; font-style: normal; }
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-SItalic.otf"); font-display: swap; font-weight: 400; font-style: italic; }
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-M.otf"); font-display: swap; font-weight: 500; font-style: normal; }
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-MItalic.otf"); font-display: swap; font-weight: 500; font-style: italic; }
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-L.otf"); font-display: swap; font-weight: 600; font-style: normal; }
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-LItalic.otf"); font-display: swap; font-weight: 600; font-style: italic; }
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-XL.otf"); font-display: swap; font-weight: 700; font-style: normal; }
+@font-face { font-family: "MSCHN"; src: url("/opening/MSCHNtrial-XLItalic.otf"); font-display: swap; font-weight: 700; font-style: italic; }
+:root {
+ --intro-black: #110f10;
+ --intro-red: #aa0502;
+ --intro-light: #9f9f9f;
+}
+.resume-intro { position: relative; width: 100%; height: 100%; overflow: hidden; isolation: isolate; background: var(--intro-black); font-family: "MSCHN", sans-serif; }
+.intro-artwork { position: relative; z-index: 1; display: block; width: 100%; height: 100%; overflow: hidden; }
+.intro-background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.intro-type { font-family: "MSCHN", sans-serif; }
+.intro-skip { position: absolute; z-index: 2; bottom: 25px; right: 32px; background: var(--intro-black); color: var(--intro-light); padding: 9px 12px; border: 0; font-size: 11px; cursor: pointer; }
+.intro-skip:focus-visible { outline: 2px solid var(--intro-light); outline-offset: 4px; }
+.intro-texture { pointer-events: none; }
+@media (max-width: 700px) { .intro-skip { right: 18px; bottom: 18px; } }
+@media (prefers-reduced-motion: reduce) { .resume-intro * { animation: none !important; transition: none !important; } }
