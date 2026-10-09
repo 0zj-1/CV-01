@@ -1,0 +1,812 @@
+[
+  {
+    "frame": 5,
+    "time": 0.166667,
+    "visibleInkBBox": [
+      78,
+      340,
+      499,
+      895
+    ],
+    "visibleInkAreaPixels": 62203,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 6,
+    "time": 0.2,
+    "visibleInkBBox": [
+      78,
+      340,
+      499,
+      895
+    ],
+    "visibleInkAreaPixels": 62203,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 50,
+    "time": 1.666667,
+    "visibleInkBBox": [
+      2,
+      256,
+      574,
+      945
+    ],
+    "visibleInkAreaPixels": 160119,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 51,
+    "time": 1.7,
+    "visibleInkBBox": [
+      15,
+      289,
+      563,
+      945
+    ],
+    "visibleInkAreaPixels": 147863,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 52,
+    "time": 1.733333,
+    "visibleInkBBox": [
+      24,
+      300,
+      553,
+      935
+    ],
+    "visibleInkAreaPixels": 138805,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 53,
+    "time": 1.766667,
+    "visibleInkBBox": [
+      56,
+      299,
+      522,
+      935
+    ],
+    "visibleInkAreaPixels": 136786,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 54,
+    "time": 1.8,
+    "visibleInkBBox": [
+      59,
+      304,
+      518,
+      931
+    ],
+    "visibleInkAreaPixels": 132798,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 55,
+    "time": 1.833333,
+    "visibleInkBBox": [
+      61,
+      307,
+      516,
+      928
+    ],
+    "visibleInkAreaPixels": 130478,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 56,
+    "time": 1.866667,
+    "visibleInkBBox": [
+      63,
+      309,
+      514,
+      924
+    ],
+    "visibleInkAreaPixels": 128248,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 57,
+    "time": 1.9,
+    "visibleInkBBox": [
+      91,
+      317,
+      486,
+      916
+    ],
+    "visibleInkAreaPixels": 99133,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 58,
+    "time": 1.933333,
+    "visibleInkBBox": [
+      92,
+      319,
+      485,
+      916
+    ],
+    "visibleInkAreaPixels": 98604,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 59,
+    "time": 1.966667,
+    "visibleInkBBox": [
+      93,
+      320,
+      484,
+      914
+    ],
+    "visibleInkAreaPixels": 97527,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 60,
+    "time": 2.0,
+    "visibleInkBBox": [
+      94,
+      321,
+      483,
+      913
+    ],
+    "visibleInkAreaPixels": 97148,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 61,
+    "time": 2.033333,
+    "visibleInkBBox": [
+      68,
+      316,
+      509,
+      912
+    ],
+    "visibleInkAreaPixels": 119005,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 62,
+    "time": 2.066667,
+    "visibleInkBBox": [
+      69,
+      318,
+      508,
+      910
+    ],
+    "visibleInkAreaPixels": 116835,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 63,
+    "time": 2.1,
+    "visibleInkBBox": [
+      71,
+      320,
+      506,
+      908
+    ],
+    "visibleInkAreaPixels": 115501,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 64,
+    "time": 2.133333,
+    "visibleInkBBox": [
+      75,
+      325,
+      502,
+      903
+    ],
+    "visibleInkAreaPixels": 111775,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 263,
+    "time": 8.766667,
+    "visibleInkBBox": [
+      56,
+      256,
+      522,
+      945
+    ],
+    "visibleInkAreaPixels": 87308,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 264,
+    "time": 8.8,
+    "visibleInkBBox": [
+      62,
+      283,
+      516,
+      945
+    ],
+    "visibleInkAreaPixels": 77245,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 265,
+    "time": 8.833333,
+    "visibleInkBBox": [
+      65,
+      291,
+      512,
+      944
+    ],
+    "visibleInkAreaPixels": 74511,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 266,
+    "time": 8.866667,
+    "visibleInkBBox": [
+      71,
+      297,
+      508,
+      936
+    ],
+    "visibleInkAreaPixels": 66627,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 267,
+    "time": 8.9,
+    "visibleInkBBox": [
+      70,
+      293,
+      509,
+      940
+    ],
+    "visibleInkAreaPixels": 70342,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 268,
+    "time": 8.933333,
+    "visibleInkBBox": [
+      71,
+      296,
+      507,
+      939
+    ],
+    "visibleInkAreaPixels": 69551,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 269,
+    "time": 8.966667,
+    "visibleInkBBox": [
+      72,
+      297,
+      507,
+      939
+    ],
+    "visibleInkAreaPixels": 69169,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 270,
+    "time": 9.0,
+    "visibleInkBBox": [
+      72,
+      297,
+      506,
+      936
+    ],
+    "visibleInkAreaPixels": 67784,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 271,
+    "time": 9.033333,
+    "visibleInkBBox": [
+      72,
+      297,
+      506,
+      936
+    ],
+    "visibleInkAreaPixels": 67410,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 272,
+    "time": 9.066667,
+    "visibleInkBBox": [
+      30,
+      305,
+      531,
+      928
+    ],
+    "visibleInkAreaPixels": 67608,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 273,
+    "time": 9.1,
+    "visibleInkBBox": [
+      30,
+      305,
+      530,
+      928
+    ],
+    "visibleInkAreaPixels": 67568,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 274,
+    "time": 9.133333,
+    "visibleInkBBox": [
+      30,
+      305,
+      530,
+      928
+    ],
+    "visibleInkAreaPixels": 67374,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 275,
+    "time": 9.166667,
+    "visibleInkBBox": [
+      30,
+      305,
+      530,
+      928
+    ],
+    "visibleInkAreaPixels": 67369,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 276,
+    "time": 9.2,
+    "visibleInkBBox": [
+      87,
+      305,
+      490,
+      945
+    ],
+    "visibleInkAreaPixels": 67677,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 277,
+    "time": 9.233333,
+    "visibleInkBBox": [
+      87,
+      305,
+      490,
+      945
+    ],
+    "visibleInkAreaPixels": 67647,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 278,
+    "time": 9.266667,
+    "visibleInkBBox": [
+      87,
+      305,
+      490,
+      945
+    ],
+    "visibleInkAreaPixels": 67601,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 279,
+    "time": 9.3,
+    "visibleInkBBox": [
+      88,
+      308,
+      490,
+      945
+    ],
+    "visibleInkAreaPixels": 67009,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 280,
+    "time": 9.333333,
+    "visibleInkBBox": [
+      89,
+      309,
+      489,
+      945
+    ],
+    "visibleInkAreaPixels": 67279,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 281,
+    "time": 9.366667,
+    "visibleInkBBox": [
+      90,
+      309,
+      488,
+      945
+    ],
+    "visibleInkAreaPixels": 65401,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": true
+  },
+  {
+    "frame": 282,
+    "time": 9.4,
+    "visibleInkBBox": [
+      85,
+      313,
+      493,
+      923
+    ],
+    "visibleInkAreaPixels": 79226,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 283,
+    "time": 9.433333,
+    "visibleInkBBox": [
+      87,
+      317,
+      490,
+      919
+    ],
+    "visibleInkAreaPixels": 76581,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 284,
+    "time": 9.466667,
+    "visibleInkBBox": [
+      92,
+      322,
+      486,
+      912
+    ],
+    "visibleInkAreaPixels": 72558,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 362,
+    "time": 12.066667,
+    "visibleInkBBox": [
+      72,
+      295,
+      508,
+      938
+    ],
+    "visibleInkAreaPixels": 68152,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 363,
+    "time": 12.1,
+    "visibleInkBBox": [
+      73,
+      297,
+      507,
+      936
+    ],
+    "visibleInkAreaPixels": 67750,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 364,
+    "time": 12.133333,
+    "visibleInkBBox": [
+      73,
+      297,
+      506,
+      935
+    ],
+    "visibleInkAreaPixels": 67922,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 365,
+    "time": 12.166667,
+    "visibleInkBBox": [
+      73,
+      297,
+      506,
+      935
+    ],
+    "visibleInkAreaPixels": 67922,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 366,
+    "time": 12.2,
+    "visibleInkBBox": [
+      31,
+      305,
+      531,
+      928
+    ],
+    "visibleInkAreaPixels": 66549,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  },
+  {
+    "frame": 367,
+    "time": 12.233333,
+    "visibleInkBBox": [
+      31,
+      305,
+      531,
+      928
+    ],
+    "visibleInkAreaPixels": 66549,
+    "roi": [
+      2,
+      120,
+      574,
+      945
+    ],
+    "clippedByMeasurementROI": false
+  }
+]
